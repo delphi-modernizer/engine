@@ -30,6 +30,15 @@ public sealed class ScannerGoldenTests
     }
 
     [Fact]
+    public void The_inventory_files_end_lines_with_LF_on_every_platform()
+    {
+        var inventory = LegacyScanner.Scan(Fixtures.Delphi("legacy-erp"), new ScanOptions(LegacyCodePage: 1258), TestContext.Current.CancellationToken);
+
+        Assert.Equal("\n", InventoryJsonContext.Default.Options.NewLine);
+        Assert.DoesNotContain('\r', InventoryMarkdown.Render(inventory));
+    }
+
+    [Fact]
     public void Scanning_twice_yields_the_same_inventory()
     {
         var first = LegacyScanner.Scan(Fixtures.Delphi("legacy-erp"), new ScanOptions(), TestContext.Current.CancellationToken);

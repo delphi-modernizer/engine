@@ -11,24 +11,24 @@ public static class InventoryMarkdown
         var summary = inventory.Summary;
         var text = new StringBuilder();
 
-        text.AppendLine("# Legacy inventory");
-        text.AppendLine();
-        text.AppendLine($"Scanner {inventory.ScannerVersion}, source fingerprint `{inventory.SourceFingerprint}`.");
-        text.AppendLine("Every count below comes from a heuristic scan; confirm what matters in the code.");
-        text.AppendLine();
-        text.AppendLine("## Summary");
-        text.AppendLine();
-        text.AppendLine("| Measure | Value |");
-        text.AppendLine("| --- | --- |");
-        text.AppendLine($"| Files | {summary.Files} |");
-        text.AppendLine($"| Projects | {summary.Projects} |");
-        text.AppendLine($"| Units | {summary.Units} |");
-        text.AppendLine($"| Forms (binary) | {summary.Forms} ({summary.BinaryForms}) |");
-        text.AppendLine($"| Data modules | {summary.DataModules} |");
-        text.AppendLine($"| Lines (code) | {summary.Lines} ({summary.CodeLines}) |");
-        text.AppendLine($"| Delphi versions suggested | {Join(summary.DelphiVersions)} |");
-        text.AppendLine($"| Frameworks | {Join(summary.Frameworks)} |");
-        text.AppendLine($"| Encodings | {string.Join(", ", summary.Encodings.Select(e => $"{e.Name} ({e.Count})"))} |");
+        Line(text, "# Legacy inventory");
+        Line(text);
+        Line(text, $"Scanner {inventory.ScannerVersion}, source fingerprint `{inventory.SourceFingerprint}`.");
+        Line(text, "Every count below comes from a heuristic scan; confirm what matters in the code.");
+        Line(text);
+        Line(text, "## Summary");
+        Line(text);
+        Line(text, "| Measure | Value |");
+        Line(text, "| --- | --- |");
+        Line(text, $"| Files | {summary.Files} |");
+        Line(text, $"| Projects | {summary.Projects} |");
+        Line(text, $"| Units | {summary.Units} |");
+        Line(text, $"| Forms (binary) | {summary.Forms} ({summary.BinaryForms}) |");
+        Line(text, $"| Data modules | {summary.DataModules} |");
+        Line(text, $"| Lines (code) | {summary.Lines} ({summary.CodeLines}) |");
+        Line(text, $"| Delphi versions suggested | {Join(summary.DelphiVersions)} |");
+        Line(text, $"| Frameworks | {Join(summary.Frameworks)} |");
+        Line(text, $"| Encodings | {string.Join(", ", summary.Encodings.Select(e => $"{e.Name} ({e.Count})"))} |");
 
         Section(text, "Projects", "| Path | Kind | Version | Framework |", inventory.Projects.Select(p => $"| `{p.Path}` | {p.Kind} | {p.DelphiVersion ?? "—"} | {p.Framework ?? "—"} |"));
         Section(text, "Database access", "| Technology | Occurrences | Example |", inventory.DatabaseAccess.Select(t => $"| {t.Name} | {t.Occurrences} | {Example(t)} |"));
@@ -57,24 +57,30 @@ public static class InventoryMarkdown
     private static void Section(StringBuilder text, string title, string header, System.Collections.Generic.IEnumerable<string> rows)
     {
         var lines = rows.ToList();
-        text.AppendLine();
-        text.AppendLine($"## {title}");
-        text.AppendLine();
+        Line(text);
+        Line(text, $"## {title}");
+        Line(text);
 
         if (lines.Count == 0)
         {
-            text.AppendLine("None found.");
+            Line(text, "None found.");
 
             return;
         }
 
-        text.AppendLine(header);
-        text.AppendLine(string.Concat(Enumerable.Repeat("| --- ", header.Count(c => c == '|') - 1)) + "|");
+        Line(text, header);
+        Line(text, string.Concat(Enumerable.Repeat("| --- ", header.Count(c => c == '|') - 1)) + "|");
 
         foreach (var line in lines)
         {
-            text.AppendLine(line);
+            Line(text, line);
         }
+    }
+
+    private static void Line(StringBuilder text, string value = "")
+    {
+        text.Append(value);
+        text.Append('\n');
     }
 
     private static string Example(TechnologyUse technology)
@@ -93,6 +99,7 @@ public static class InventoryMarkdown
     {
         return text
             .Replace("|", "\\|", System.StringComparison.Ordinal)
+            .Replace("\r", string.Empty, System.StringComparison.Ordinal)
             .Replace("\n", " ", System.StringComparison.Ordinal);
     }
 }

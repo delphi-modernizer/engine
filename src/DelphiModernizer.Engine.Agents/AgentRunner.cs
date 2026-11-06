@@ -46,7 +46,9 @@ public sealed class AgentRunner(ClaudeExecutable executable)
         RunCompleted? completed = null;
 
         using var process = Start(request);
-        var transcript = new StreamWriter(Path.Combine(runs, request.RunId + ".jsonl"), append: false, new UTF8Encoding(false));
+        var transcript = new StreamWriter(Path.Combine(runs, request.RunId + ".jsonl"), append: false, new UTF8Encoding(false)) {
+            NewLine = "\n",
+        };
         var pump = PumpAsync(process, channel.Writer, transcript, cancellationToken);
 
         try

@@ -6,6 +6,7 @@ namespace DelphiModernizer.Engine.Delphi.Inventory;
 [JsonSourceGenerationOptions(
     PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
     WriteIndented = true,
+    NewLine = "\n",
     DefaultIgnoreCondition = JsonIgnoreCondition.Never)]
 [JsonSerializable(typeof(LegacyInventory))]
 public sealed partial class InventoryJsonContext : JsonSerializerContext;
