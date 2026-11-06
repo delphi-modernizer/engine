@@ -20,6 +20,20 @@ public sealed class AnalysisTests
     }
 
     [Theory]
+    [InlineData("FPassword := 'Winter2004';", true)]
+    [InlineData("const DbPwd = 'S3cr3t';", true)]
+    [InlineData("Edit1.PasswordChar := '*';", false)]
+    [InlineData("aTokenType := 'ident';", false)]
+    [InlineData("S := 'CREATE LOGIN %s WITH PASSWORD = %s';", false)]
+    [InlineData("Args.Add('--password=\"***\"');", false)]
+    public void Hard_coded_credentials_are_found_without_flagging_placeholders(string source, bool expected)
+    {
+        var findings = Analyze(source);
+
+        Assert.Equal(expected, findings.Markers.Any(m => m.Kind == "hard-coded-credential"));
+    }
+
+    [Theory]
     [InlineData("select a from t", true, "select")]
     [InlineData("  update T set A = 1", true, "update")]
     [InlineData("EXEC dbo.Charge 1", true, "execute")]

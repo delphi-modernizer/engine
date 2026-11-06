@@ -77,6 +77,8 @@ internal static partial class TechnologyCatalog
         new("Spring4D", "other", Spring4DUnits(), null),
         new("DUnit", "testing", DUnitUnits(), null),
         new("DUnitX", "testing", DUnitXUnits(), null),
+        new("TestInsight", "testing", TestInsightUnits(), null),
+        new("TNT Unicode Controls", "ui", TntUnits(), TntClasses()),
         new("madExcept", "diagnostics", MadExceptUnits(), null),
         new("EurekaLog", "diagnostics", EurekaLogUnits(), null),
     ];
@@ -95,7 +97,10 @@ internal static partial class TechnologyCatalog
         "RegularExpressions", "AnsiStrings", "WideStrUtils", "ZLib", "EncdDecd", "NetEncoding", "Hash", "JSON",
         "Generics.Collections", "Generics.Defaults", "Diagnostics", "TimeSpan", "Sockets", "ScktComp", "DdeMan",
         "Mapi", "ComServ", "AxCtrls", "StdVCL", "ShDocVw", "MSHTML", "Midas", "DBCommon", "DBLogDlg", "DBPWDlg",
-        "CustomizeDlg", "ColorGrd", "Outline", "Calendar",
+        "CustomizeDlg", "ColorGrd", "Outline", "Calendar", "SysConst", "UITypes", "Rtti", "ShLwApi", "WideStrings",
+        "ImageList", "Actions", "ObjAuto", "ObjComAuto", "PropSys", "PropKey", "ToolsAPI", "DesignIntf",
+        "DesignEditors", "VCLEditors", "DsgnIntf", "PropertyCategories", "ColnEdit", "StrEdit", "TreeIntf",
+        "DesignMenus", "DesignWindows", "Libc", "Xlib", "Qt", "QForms", "QControls", "QGraphics",
     }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
 
     private static readonly FrozenSet<string> _standardClasses = new[]
@@ -270,6 +275,15 @@ internal static partial class TechnologyCatalog
 
     [GeneratedRegex(@"^(TestFramework|GUITestRunner|TextTestRunner|TestExtensions)$", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase, matchTimeoutMilliseconds: 1000)]
     private static partial Regex DUnitUnits();
+
+    [GeneratedRegex(@"^TestInsight\.", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase, matchTimeoutMilliseconds: 1000)]
+    private static partial Regex TestInsightUnits();
+
+    [GeneratedRegex(@"^Tnt[A-Z]", RegexOptions.CultureInvariant, matchTimeoutMilliseconds: 1000)]
+    private static partial Regex TntUnits();
+
+    [GeneratedRegex(@"^TTnt[A-Z]", RegexOptions.CultureInvariant, matchTimeoutMilliseconds: 1000)]
+    private static partial Regex TntClasses();
 
     [GeneratedRegex(@"^DUnitX\.", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase, matchTimeoutMilliseconds: 1000)]
     private static partial Regex DUnitXUnits();
