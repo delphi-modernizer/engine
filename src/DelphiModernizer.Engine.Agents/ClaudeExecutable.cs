@@ -28,6 +28,11 @@ public sealed record ClaudeExecutable(string FileName, IReadOnlyList<string> Lea
             return Result.Failure<ClaudeExecutable>(new Error("Claude.NotFound", "The Claude Code CLI is not on PATH. Install it from https://claude.com/claude-code."));
         }
 
+        if (!File.Exists(candidate))
+        {
+            return Result.Failure<ClaudeExecutable>(new Error("Claude.NotFound", $"{candidate} does not exist."));
+        }
+
         if (OperatingSystem.IsWindows() && !candidate.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
         {
             return Result.Failure<ClaudeExecutable>(new Error("Claude.UnsupportedShim", $"{candidate} is a script shim; install the native Claude Code build, which provides claude.exe."));
