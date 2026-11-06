@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "scannerVersion": "test",
+  "sourceFingerprint": "sha256:c645efa5fb7a0a87d4bdc169da01e41caf4f69852e70d630bf60f571ef10fa09",
+  "summary": {
+    "files": 2,
+    "projects": 0,
+    "units": 1,
+    "forms": 0,
+    "dataModules": 0,
+    "binaryForms": 0,
+    "lines": 50,
+    "codeLines": 34,
+    "filesByExtension": [
+      {
+        "name": ".pas",
+        "count": 1
+      },
+      {
+        "name": ".txt",
+        "count": 1
+      }
+    ],
+    "encodings": [
+      {
+        "name": "us-ascii",
+        "count": 1
+      }
+    ],
+    "delphiVersions": [],
+    "frameworks": []
+  },
+  "projects": [],
+  "units": [
+    {
+      "name": "Comments",
+      "path": "Comments.pas",
+      "kind": "unit",
+      "lines": 50,
+      "codeLines": 34,
+      "encoding": "us-ascii",
+      "interfaceUses": [
+        "SysUtils",
+        "Windows",
+        "Posix.Unistd"
+      ],
+      "implementationUses": [],
+      "types": [
+        {
+          "name": "TPoint3",
+          "kind": "record",
+          "ancestors": [],
+          "line": 12
+        },
+        {
+          "name": "TShape",
+          "kind": "class",
+          "ancestors": [
+            "TObject"
+          ],
+          "line": 16
+        },
+        {
+          "name": "TList\u003C\u003E",
+          "kind": "class",
+          "ancestors": [
+            "TObject"
+          ],
+          "line": 21
+        },
+        {
+          "name": "TVariant",
+          "kind": "record",
+          "ancestors": [],
+          "line": 26
+        }
+      ],
+      "routines": 2,
+      "globalVariables": 0,
+      "hasInitialization": false,
+      "hasFinalization": false,
+      "formFile": null,
+      "fanIn": 0,
+      "fanOut": 0
+    }
+  ],
+  "forms": [],
+  "components": [],
+  "databaseAccess": [],
+  "thirdParty": [],
+  "connections": [],
+  "sql": [],
+  "externalRoutines": [],
+  "comObjects": [],
+  "riskMarkers": [
+    {
+      "kind": "conditional-compilation",
+      "path": "Comments.pas",
+      "line": 9,
+      "count": 1,
+      "detail": "{$IFDEF MSWINDOWS}"
+    }
+  ],
+  "dependencies": {
+    "nodes": 1,
+    "edges": 0,
+    "cycles": [],
+    "topFanIn": [],
+    "topFanOut": []
+  },
+  "unresolvedUnits": [],
+  "diagnostics": [
+    {
+      "path": "Comments.pas",
+      "line": 50,
+      "message": "unterminated comment"
+    }
+  ]
+}

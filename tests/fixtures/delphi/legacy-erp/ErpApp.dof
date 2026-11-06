@@ -1,0 +1,8 @@
+[FileVersion]
+Version=7.0
+[Compiler]
+A=8
+Q=0
+R=0
+[Directories]
+Conditionals=LEGACY;BDE_BUILD

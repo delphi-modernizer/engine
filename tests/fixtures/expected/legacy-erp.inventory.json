@@ -1,0 +1,804 @@
+{
+  "schemaVersion": 1,
+  "scannerVersion": "test",
+  "sourceFingerprint": "sha256:3cf15534f8b9c5b909c826267fa412a4f14a117e442ca1cf4900322c846ccb11",
+  "summary": {
+    "files": 13,
+    "projects": 3,
+    "units": 6,
+    "forms": 4,
+    "dataModules": 1,
+    "binaryForms": 1,
+    "lines": 205,
+    "codeLines": 153,
+    "filesByExtension": [
+      {
+        "name": ".pas",
+        "count": 6
+      },
+      {
+        "name": ".dfm",
+        "count": 4
+      },
+      {
+        "name": ".cfg",
+        "count": 1
+      },
+      {
+        "name": ".dof",
+        "count": 1
+      },
+      {
+        "name": ".dpr",
+        "count": 1
+      }
+    ],
+    "encodings": [
+      {
+        "name": "us-ascii",
+        "count": 11
+      },
+      {
+        "name": "windows-1258",
+        "count": 1
+      }
+    ],
+    "delphiVersions": [
+      "Delphi 7.0"
+    ],
+    "frameworks": []
+  },
+  "projects": [
+    {
+      "path": "ErpApp.cfg",
+      "kind": "options",
+      "name": "ErpApp",
+      "framework": null,
+      "delphiVersion": null,
+      "projectVersion": null,
+      "platforms": [],
+      "defines": [
+        "BDE_BUILD",
+        "LEGACY"
+      ],
+      "references": []
+    },
+    {
+      "path": "ErpApp.dof",
+      "kind": "options",
+      "name": "ErpApp",
+      "framework": null,
+      "delphiVersion": "Delphi 7.0",
+      "projectVersion": "7.0",
+      "platforms": [],
+      "defines": [
+        "BDE_BUILD",
+        "LEGACY"
+      ],
+      "references": []
+    },
+    {
+      "path": "ErpApp.dpr",
+      "kind": "program",
+      "name": "ErpApp",
+      "framework": null,
+      "delphiVersion": null,
+      "projectVersion": null,
+      "platforms": [],
+      "defines": [],
+      "references": [
+        {
+          "name": "Forms",
+          "path": null
+        },
+        {
+          "name": "MainForm",
+          "path": "MainForm.pas"
+        },
+        {
+          "name": "CustomerForm",
+          "path": "Sales\\CustomerForm.pas"
+        },
+        {
+          "name": "Pricing",
+          "path": "Sales\\Pricing.pas"
+        },
+        {
+          "name": "Utils",
+          "path": "Common\\Utils.pas"
+        },
+        {
+          "name": "DataModule",
+          "path": "Data\\DataModule.pas"
+        },
+        {
+          "name": "Invoice",
+          "path": "Reports\\Invoice.pas"
+        }
+      ]
+    }
+  ],
+  "units": [
+    {
+      "name": "Utils",
+      "path": "Common/Utils.pas",
+      "kind": "unit",
+      "lines": 40,
+      "codeLines": 31,
+      "encoding": "windows-1258",
+      "interfaceUses": [],
+      "implementationUses": [
+        "SysUtils",
+        "Pricing"
+      ],
+      "types": [],
+      "routines": 1,
+      "globalVariables": 3,
+      "hasInitialization": true,
+      "hasFinalization": false,
+      "formFile": null,
+      "fanIn": 2,
+      "fanOut": 1
+    },
+    {
+      "name": "DataModule",
+      "path": "Data/DataModule.pas",
+      "kind": "unit",
+      "lines": 21,
+      "codeLines": 14,
+      "encoding": "us-ascii",
+      "interfaceUses": [
+        "SysUtils",
+        "Classes",
+        "DB",
+        "DBTables"
+      ],
+      "implementationUses": [],
+      "types": [
+        {
+          "name": "TDmMain",
+          "kind": "class",
+          "ancestors": [
+            "TDataModule"
+          ],
+          "line": 9
+        }
+      ],
+      "routines": 0,
+      "globalVariables": 1,
+      "hasInitialization": false,
+      "hasFinalization": false,
+      "formFile": "Data/DataModule.dfm",
+      "fanIn": 1,
+      "fanOut": 0
+    },
+    {
+      "name": "ErpApp",
+      "path": "ErpApp.dpr",
+      "kind": "program",
+      "lines": 19,
+      "codeLines": 16,
+      "encoding": "us-ascii",
+      "interfaceUses": [
+        "Forms",
+        "MainForm",
+        "CustomerForm",
+        "Pricing",
+        "Utils",
+        "DataModule",
+        "Invoice"
+      ],
+      "implementationUses": [],
+      "types": [],
+      "routines": 0,
+      "globalVariables": 0,
+      "hasInitialization": false,
+      "hasFinalization": false,
+      "formFile": null,
+      "fanIn": 0,
+      "fanOut": 6
+    },
+    {
+      "name": "MainForm",
+      "path": "MainForm.pas",
+      "kind": "unit",
+      "lines": 31,
+      "codeLines": 22,
+      "encoding": "us-ascii",
+      "interfaceUses": [
+        "Windows",
+        "Messages",
+        "SysUtils",
+        "Classes",
+        "Graphics",
+        "Controls",
+        "Forms",
+        "Dialogs",
+        "Menus"
+      ],
+      "implementationUses": [
+        "CustomerForm"
+      ],
+      "types": [
+        {
+          "name": "TFrmMain",
+          "kind": "class",
+          "ancestors": [
+            "TForm"
+          ],
+          "line": 9
+        }
+      ],
+      "routines": 1,
+      "globalVariables": 1,
+      "hasInitialization": false,
+      "hasFinalization": false,
+      "formFile": "MainForm.dfm",
+      "fanIn": 1,
+      "fanOut": 1
+    },
+    {
+      "name": "Invoice",
+      "path": "Reports/Invoice.pas",
+      "kind": "unit",
+      "lines": 17,
+      "codeLines": 11,
+      "encoding": "us-ascii",
+      "interfaceUses": [
+        "Forms",
+        "QuickRpt",
+        "QRCtrls"
+      ],
+      "implementationUses": [],
+      "types": [
+        {
+          "name": "TFrmInvoice",
+          "kind": "class",
+          "ancestors": [
+            "TForm"
+          ],
+          "line": 9
+        }
+      ],
+      "routines": 0,
+      "globalVariables": 0,
+      "hasInitialization": false,
+      "hasFinalization": false,
+      "formFile": "Reports/Invoice.dfm",
+      "fanIn": 1,
+      "fanOut": 0
+    },
+    {
+      "name": "CustomerForm",
+      "path": "Sales/CustomerForm.pas",
+      "kind": "unit",
+      "lines": 46,
+      "codeLines": 36,
+      "encoding": "us-ascii",
+      "interfaceUses": [
+        "SysUtils",
+        "Classes",
+        "Controls",
+        "Forms",
+        "DB",
+        "DBTables",
+        "Grids",
+        "DBGrids",
+        "StdCtrls"
+      ],
+      "implementationUses": [
+        "Pricing"
+      ],
+      "types": [
+        {
+          "name": "TFrmCustomer",
+          "kind": "class",
+          "ancestors": [
+            "TForm"
+          ],
+          "line": 9
+        }
+      ],
+      "routines": 2,
+      "globalVariables": 1,
+      "hasInitialization": false,
+      "hasFinalization": false,
+      "formFile": "Sales/CustomerForm.dfm",
+      "fanIn": 2,
+      "fanOut": 1
+    },
+    {
+      "name": "Pricing",
+      "path": "Sales/Pricing.pas",
+      "kind": "unit",
+      "lines": 31,
+      "codeLines": 23,
+      "encoding": "us-ascii",
+      "interfaceUses": [],
+      "implementationUses": [
+        "Utils"
+      ],
+      "types": [],
+      "routines": 1,
+      "globalVariables": 1,
+      "hasInitialization": false,
+      "hasFinalization": false,
+      "formFile": null,
+      "fanIn": 3,
+      "fanOut": 1
+    }
+  ],
+  "forms": [
+    {
+      "path": "Data/DataModule.dfm",
+      "rootName": "DmMain",
+      "rootClass": "TDmMain",
+      "isBinary": false,
+      "components": [
+        {
+          "name": "DmMain",
+          "className": "TDmMain",
+          "line": 1,
+          "depth": 0
+        },
+        {
+          "name": "DbErp",
+          "className": "TDatabase",
+          "line": 5,
+          "depth": 1
+        },
+        {
+          "name": "TblOrders",
+          "className": "TTable",
+          "line": 16,
+          "depth": 1
+        }
+      ],
+      "events": []
+    },
+    {
+      "path": "MainForm.dfm",
+      "rootName": "FrmMain",
+      "rootClass": "TFrmMain",
+      "isBinary": false,
+      "components": [
+        {
+          "name": "FrmMain",
+          "className": "TFrmMain",
+          "line": 1,
+          "depth": 0
+        },
+        {
+          "name": "MainMenu",
+          "className": "TMainMenu",
+          "line": 6,
+          "depth": 1
+        },
+        {
+          "name": "MnuCustomers",
+          "className": "TMenuItem",
+          "line": 9,
+          "depth": 2
+        }
+      ],
+      "events": [
+        {
+          "component": "MnuCustomers",
+          "event": "OnClick",
+          "handler": "MnuCustomersClick",
+          "line": 11
+        }
+      ]
+    },
+    {
+      "path": "Reports/Invoice.dfm",
+      "rootName": null,
+      "rootClass": null,
+      "isBinary": true,
+      "components": [],
+      "events": []
+    },
+    {
+      "path": "Sales/CustomerForm.dfm",
+      "rootName": "FrmCustomer",
+      "rootClass": "TFrmCustomer",
+      "isBinary": false,
+      "components": [
+        {
+          "name": "FrmCustomer",
+          "className": "TFrmCustomer",
+          "line": 1,
+          "depth": 0
+        },
+        {
+          "name": "GrdCustomers",
+          "className": "TDBGrid",
+          "line": 5,
+          "depth": 1
+        },
+        {
+          "name": "EdtSearch",
+          "className": "TEdit",
+          "line": 10,
+          "depth": 1
+        },
+        {
+          "name": "BtnSearch",
+          "className": "TButton",
+          "line": 14,
+          "depth": 1
+        },
+        {
+          "name": "QryCustomers",
+          "className": "TQuery",
+          "line": 20,
+          "depth": 1
+        },
+        {
+          "name": "DsCustomers",
+          "className": "TDataSource",
+          "line": 29,
+          "depth": 1
+        }
+      ],
+      "events": [
+        {
+          "component": "BtnSearch",
+          "event": "OnClick",
+          "handler": "BtnSearchClick",
+          "line": 18
+        }
+      ]
+    }
+  ],
+  "components": [
+    {
+      "className": "TButton",
+      "count": 1,
+      "vendor": null,
+      "category": "standard"
+    },
+    {
+      "className": "TDBGrid",
+      "count": 1,
+      "vendor": null,
+      "category": "standard"
+    },
+    {
+      "className": "TDataSource",
+      "count": 1,
+      "vendor": null,
+      "category": "standard"
+    },
+    {
+      "className": "TDatabase",
+      "count": 1,
+      "vendor": null,
+      "category": "database"
+    },
+    {
+      "className": "TEdit",
+      "count": 1,
+      "vendor": null,
+      "category": "standard"
+    },
+    {
+      "className": "TMainMenu",
+      "count": 1,
+      "vendor": null,
+      "category": "standard"
+    },
+    {
+      "className": "TMenuItem",
+      "count": 1,
+      "vendor": null,
+      "category": "standard"
+    },
+    {
+      "className": "TQuery",
+      "count": 1,
+      "vendor": null,
+      "category": "database"
+    },
+    {
+      "className": "TTable",
+      "count": 1,
+      "vendor": null,
+      "category": "database"
+    }
+  ],
+  "databaseAccess": [
+    {
+      "name": "BDE",
+      "category": "database",
+      "occurrences": 5,
+      "evidence": [
+        {
+          "path": "Data/DataModule.dfm",
+          "line": 5,
+          "detail": "TDatabase DbErp"
+        },
+        {
+          "path": "Data/DataModule.dfm",
+          "line": 16,
+          "detail": "TTable TblOrders"
+        },
+        {
+          "path": "Data/DataModule.pas",
+          "line": 0,
+          "detail": "uses DBTables"
+        },
+        {
+          "path": "Sales/CustomerForm.dfm",
+          "line": 20,
+          "detail": "TQuery QryCustomers"
+        },
+        {
+          "path": "Sales/CustomerForm.pas",
+          "line": 0,
+          "detail": "uses DBTables"
+        }
+      ]
+    }
+  ],
+  "thirdParty": [
+    {
+      "name": "QuickReport",
+      "category": "report",
+      "occurrences": 2,
+      "evidence": [
+        {
+          "path": "Reports/Invoice.pas",
+          "line": 0,
+          "detail": "uses QuickRpt"
+        },
+        {
+          "path": "Reports/Invoice.pas",
+          "line": 0,
+          "detail": "uses QRCtrls"
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "path": "Data/DataModule.dfm",
+      "line": 6,
+      "component": "DbErp",
+      "className": "TDatabase",
+      "technology": "BDE",
+      "details": "AliasName=ERP_PROD; DatabaseName=ERPDB; Params.Strings=USER NAME=erp_app;PASSWORD=***",
+      "hasEmbeddedPassword": true
+    }
+  ],
+  "sql": [
+    {
+      "path": "Sales/CustomerForm.dfm",
+      "line": 22,
+      "source": "form",
+      "owner": "QryCustomers",
+      "kind": "select",
+      "text": "select ID, NAME, CREDIT_LIMIT from CUSTOMER order by NAME",
+      "builtByConcatenation": false
+    },
+    {
+      "path": "Sales/CustomerForm.pas",
+      "line": 35,
+      "source": "code",
+      "owner": null,
+      "kind": "select",
+      "text": "select ID, NAME, CREDIT_LIMIT from CUSTOMER where NAME like \u0027?%\u0027",
+      "builtByConcatenation": true
+    }
+  ],
+  "externalRoutines": [
+    {
+      "path": "Common/Utils.pas",
+      "line": 6,
+      "routine": "TickCount",
+      "library": "kernel32.dll"
+    }
+  ],
+  "comObjects": [],
+  "riskMarkers": [
+    {
+      "kind": "absolute-variable",
+      "path": "Common/Utils.pas",
+      "line": 20,
+      "count": 1,
+      "detail": "absolute"
+    },
+    {
+      "kind": "currency",
+      "path": "Common/Utils.pas",
+      "line": 5,
+      "count": 2,
+      "detail": "Currency"
+    },
+    {
+      "kind": "global-state",
+      "path": "Common/Utils.pas",
+      "line": 0,
+      "count": 3,
+      "detail": "unit-level variables"
+    },
+    {
+      "kind": "hard-coded-credential",
+      "path": "Common/Utils.pas",
+      "line": 14,
+      "count": 1,
+      "detail": "DbPassword = \u0027***\u0027"
+    },
+    {
+      "kind": "inline-assembler",
+      "path": "Common/Utils.pas",
+      "line": 32,
+      "count": 1,
+      "detail": "asm"
+    },
+    {
+      "kind": "manual-memory",
+      "path": "Common/Utils.pas",
+      "line": 26,
+      "count": 2,
+      "detail": "GetMem"
+    },
+    {
+      "kind": "raw-memory",
+      "path": "Common/Utils.pas",
+      "line": 28,
+      "count": 1,
+      "detail": "Move"
+    },
+    {
+      "kind": "short-string",
+      "path": "Common/Utils.pas",
+      "line": 18,
+      "count": 2,
+      "detail": "ShortString"
+    },
+    {
+      "kind": "hard-coded-credential",
+      "path": "Data/DataModule.dfm",
+      "line": 6,
+      "count": 1,
+      "detail": "DbErp: password stored in the form"
+    },
+    {
+      "kind": "global-state",
+      "path": "Data/DataModule.pas",
+      "line": 0,
+      "count": 1,
+      "detail": "unit-level variables"
+    },
+    {
+      "kind": "global-state",
+      "path": "MainForm.pas",
+      "line": 0,
+      "count": 1,
+      "detail": "unit-level variables"
+    },
+    {
+      "kind": "currency",
+      "path": "Sales/CustomerForm.pas",
+      "line": 17,
+      "count": 2,
+      "detail": "Currency"
+    },
+    {
+      "kind": "global-state",
+      "path": "Sales/CustomerForm.pas",
+      "line": 0,
+      "count": 1,
+      "detail": "unit-level variables"
+    },
+    {
+      "kind": "process-messages",
+      "path": "Sales/CustomerForm.pas",
+      "line": 38,
+      "count": 1,
+      "detail": "ProcessMessages"
+    },
+    {
+      "kind": "sql-concatenation",
+      "path": "Sales/CustomerForm.pas",
+      "line": 35,
+      "count": 1,
+      "detail": "select ID, NAME, CREDIT_LIMIT from CUSTOMER where NAME like \u0027?%\u0027"
+    },
+    {
+      "kind": "with-statement",
+      "path": "Sales/CustomerForm.pas",
+      "line": 32,
+      "count": 1,
+      "detail": "with"
+    },
+    {
+      "kind": "currency",
+      "path": "Sales/Pricing.pas",
+      "line": 5,
+      "count": 5,
+      "detail": "Currency"
+    },
+    {
+      "kind": "extended-precision",
+      "path": "Sales/Pricing.pas",
+      "line": 20,
+      "count": 1,
+      "detail": "Extended"
+    },
+    {
+      "kind": "global-state",
+      "path": "Sales/Pricing.pas",
+      "line": 0,
+      "count": 1,
+      "detail": "unit-level variables"
+    }
+  ],
+  "dependencies": {
+    "nodes": 7,
+    "edges": 10,
+    "cycles": [
+      [
+        "Pricing",
+        "Utils"
+      ]
+    ],
+    "topFanIn": [
+      {
+        "name": "Pricing",
+        "count": 3
+      },
+      {
+        "name": "CustomerForm",
+        "count": 2
+      },
+      {
+        "name": "Utils",
+        "count": 2
+      },
+      {
+        "name": "DataModule",
+        "count": 1
+      },
+      {
+        "name": "Invoice",
+        "count": 1
+      },
+      {
+        "name": "MainForm",
+        "count": 1
+      }
+    ],
+    "topFanOut": [
+      {
+        "name": "ErpApp",
+        "count": 6
+      },
+      {
+        "name": "CustomerForm",
+        "count": 1
+      },
+      {
+        "name": "MainForm",
+        "count": 1
+      },
+      {
+        "name": "Pricing",
+        "count": 1
+      },
+      {
+        "name": "Utils",
+        "count": 1
+      }
+    ]
+  },
+  "unresolvedUnits": [],
+  "diagnostics": [
+    {
+      "path": "Reports/Invoice.dfm",
+      "line": 0,
+      "message": "binary form file: convert it to text (convert.exe) to inventory its components"
+    }
+  ]
+}
