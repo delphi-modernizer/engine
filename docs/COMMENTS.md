@@ -35,7 +35,7 @@ repository whose copy differs.
 | --- | --- | --- | --- |
 | C# | `///`, never `//`; `<summary>` is one sentence, `<remarks>` only for an invariant (≤ 4 lines) | `//`, at most two lines | CS1591 on contract assemblies only |
 | Java | Javadoc per the [Google Java Style Guide §7](https://google.github.io/styleguide/javaguide.html#s7-javadoc), never `//`; self-explanatory members take none (§7.3.1) | `//`, at most two lines | Checkstyle `google_checks.xml` |
-| Python | a one-sentence docstring on public modules, classes and functions whose name is not enough | `#`, at most two lines | — |
+| Python | docstrings per the [Google Python Style Guide §3.8](https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings): a one-line summary ending in a period, then `Args:`, `Returns:` and `Raises:` where they add to the signature | `#`, at most two lines | pylint `missing-docstring` with Google's pylintrc |
 | Shell, PowerShell | one header line saying what the script enforces or produces | `#`, at most two lines | — |
 
 ## Examples
