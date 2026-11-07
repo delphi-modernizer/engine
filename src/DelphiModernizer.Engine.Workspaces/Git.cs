@@ -21,18 +21,12 @@ internal static class Git
         return result?.Succeeded == true ? result.StandardOutput.Trim() : null;
     }
 
-    /// <summary>The person git would record as the author, as <c>Name &lt;email&gt;</c>; null when unset.</summary>
-    public static async Task<string?> IdentityAsync(string root, CancellationToken cancellationToken)
+    /// <summary>A git config value as git resolves it for <paramref name="root"/>; null when unset.</summary>
+    public static async Task<string?> ConfigAsync(string root, string key, CancellationToken cancellationToken)
     {
-        var name = await TryRunAsync(root, cancellationToken, "config", "user.name");
-        var email = await TryRunAsync(root, cancellationToken, "config", "user.email");
+        var result = await TryRunAsync(root, cancellationToken, "config", key);
 
-        if (name?.Succeeded != true || string.IsNullOrWhiteSpace(name.StandardOutput))
-        {
-            return null;
-        }
-
-        return email?.Succeeded == true ? $"{name.StandardOutput.Trim()} <{email.StandardOutput.Trim()}>" : name.StandardOutput.Trim();
+        return result?.Succeeded == true ? result.StandardOutput.Trim() : null;
     }
 
     public static async Task<bool> InitAsync(string root, CancellationToken cancellationToken)

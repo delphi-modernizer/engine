@@ -21,6 +21,7 @@ internal static class InitCommand
         var codePage = new Option<int>("--code-page") { Description = "The code page of legacy files without a byte order mark.", DefaultValueFactory = _ => 1252 };
         var by = new Option<string?>("--by") { Description = "Who makes these decisions; defaults to git user.name and user.email." };
         var domain = new Option<string?>("--domain") { Description = "The business domain and purpose of the system." };
+        var objectives = new Option<string?>("--objectives") { Description = "What the modernization should achieve." };
         var users = new Option<string?>("--users") { Description = "Who uses the system." };
         var geography = new Option<string?>("--geography") { Description = "Where the system and its users operate." };
         var criticality = new Option<string?>("--criticality") { Description = "Business continuity needs: tolerated downtime, peak periods." };
@@ -28,7 +29,7 @@ internal static class InitCommand
         var noGit = new Option<bool>("--no-git") { Description = "Do not make the workspace a git repository." };
         var command = new Command("init", "Create a modernization workspace.")
         {
-            directory, name, legacy, stack, codePage, by, domain, users, geography, criticality, constraints, noGit,
+            directory, name, legacy, stack, codePage, by, domain, objectives, users, geography, criticality, constraints, noGit,
         };
 
         command.SetAction(async (parseResult, cancellationToken) => {
@@ -53,13 +54,13 @@ internal static class InitCommand
                 person,
                 new ProjectContext(
                     parseResult.GetValue(domain),
-                    null,
+                    parseResult.GetValue(objectives),
                     parseResult.GetValue(users),
                     parseResult.GetValue(geography),
                     parseResult.GetValue(criticality),
                     parseResult.GetValue(constraints)),
                 !parseResult.GetValue(noGit));
-            var result = await WorkspaceInitializer.InitializeAsync(request, cancellationToken);
+            var result = await WorkspaceInitializer.InitializeAsync(request, progress: null, cancellationToken);
 
             if (result.IsFailure)
             {

@@ -32,7 +32,7 @@ internal sealed class TestWorkspace : IDisposable
             "Test Person <test@example.com>",
             new ProjectContext("Wholesale distribution.", null, "Sales staff.", "Vietnam", null, null),
             InitializeGit: false);
-        var result = await WorkspaceInitializer.InitializeAsync(request, CancellationToken.None);
+        var result = await WorkspaceInitializer.InitializeAsync(request, null, CancellationToken.None);
 
         return new TestWorkspace(parent, result.Value);
     }

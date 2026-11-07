@@ -61,7 +61,7 @@ public static class ApprovalService
         bool commit,
         CancellationToken cancellationToken)
     {
-        var person = by ?? await Git.IdentityAsync(workspace.Root, cancellationToken);
+        var person = by ?? (await GitIdentity.ReadAsync(workspace.Root, cancellationToken))?.ToString();
 
         if (string.IsNullOrWhiteSpace(person))
         {

@@ -2,7 +2,7 @@
 
 | Command | Does | Exit codes |
 | --- | --- | --- |
-| `dmz init <folder> --name --legacy --stack dotnet\|jvm\|deferred [--code-page] [--by] [--domain] [--users] [--geography] [--criticality] [--constraints] [--no-git]` | Creates a workspace: kit files, a copy of the legacy tree, `modernizer.json`, DEC-001 or Q-001 for the stack, the charter's context, a first commit | 0, 1 |
+| `dmz init <folder> --name --legacy --stack dotnet\|jvm\|deferred [--code-page] [--by] [--domain] [--objectives] [--users] [--geography] [--criticality] [--constraints] [--no-git]` | Creates a workspace: kit files, a copy of the legacy tree, `modernizer.json`, DEC-001 or Q-001 for the stack, the charter's context with a question for each part left out, a first commit | 0, 1 |
 | `dmz scan [--code-page]` | Inventories `legacy/` | 0, 1 |
 | `dmz trace [--strict] [--json]` | Checks traceability | 0 clean, 1 errors |
 | `dmz status [--json]` | Shows gates G0–G4 and what blocks each | 0, 1 |

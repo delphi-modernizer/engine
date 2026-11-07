@@ -15,3 +15,6 @@ engine follows [Semantic Versioning](https://semver.org/).
 - Agent runner for the Claude Code CLI with typed events, transcripts and run records.
 - `dmz` command line.
 - KH0001–KH0007 layout analyzers, shared with the studio.
+- `GitIdentity` for the person git records, and progress reports while a workspace is created.
+- Each part of the essential context left unknown at creation becomes an open question the charter points to;
+  `dmz init --objectives` states the objectives.
