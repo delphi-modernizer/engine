@@ -21,7 +21,8 @@ It adds no agent loop of its own.
    to the caller through a bounded channel ([design note](design/agent-event-stream.md)). Standard error becomes
    diagnostic events.
 5. When the run ends — result, failure or cancellation — `.modernizer/runs/<run id>.json` records the outcome, cost
-   and turns, and the leases are released. Cancelling kills the CLI's whole process tree.
+   and turns, and the leases are released. Cancelling kills the CLI's whole process tree and waits up to ten
+   seconds for it to exit before the run ends.
 
 ## Safety layers
 
