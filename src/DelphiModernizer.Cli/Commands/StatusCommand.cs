@@ -39,7 +39,7 @@ internal static class StatusCommand
             foreach (var gate in gates)
             {
                 var approval = gate.Approval is null ? string.Empty : $" by {gate.Approval.By} on {gate.Approval.At:yyyy-MM-dd}";
-                await context.Output.WriteLineAsync($"{gate.Gate} {gate.Title}: {gate.State}{approval}");
+                await context.Output.WriteLineAsync($"{gate.Name} ({gate.Gate}): {gate.State}{approval}");
 
                 foreach (var check in gate.Checks.Where(c => !c.Passed))
                 {

@@ -40,7 +40,7 @@ cd "$ws"
 expect 0 dmz scan
 contains "Database access: BDE"
 expect 0 dmz status
-contains "G0 Initialized: ready"
+contains "Project setup (G0): ready"
 expect 0 dmz trace
 contains "0 errors"
 expect 2 hook Edit '{"file_path":"legacy/Sales/Pricing.pas"}'
@@ -49,10 +49,10 @@ expect 2 hook Bash '{"command":"dmz approve G4"}'
 expect 1 env CLAUDECODE=1 dotnet "$dmz_dll" approve G0 --by Agent
 expect 0 dmz approve G0 --by Person --note "Charter reviewed" --no-commit
 expect 0 dmz status
-contains "G0 Initialized: approved"
+contains "Project setup (G0): approved"
 printf '\nA late change.\n' >> docs/00-project-charter/D01-project-charter.md
 expect 0 dmz status
-contains "G0 Initialized: stale"
+contains "Project setup (G0): stale"
 expect 0 dmz stack dotnet --by Person
 expect 0 dmz trace
 printf '\n### BR-001 — Undocumented\n' >> docs/02-functional-requirements/business-rules.md

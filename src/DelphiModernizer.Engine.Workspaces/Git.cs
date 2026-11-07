@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DelphiModernizer.Engine.Core;
@@ -48,6 +51,32 @@ internal static class Git
         var commit = await TryRunAsync(root, cancellationToken, "commit", "--quiet", "-m", message);
 
         return commit?.Succeeded == true;
+    }
+
+    /// <summary>
+    /// Which of <paramref name="paths"/> differ between <paramref name="commit"/> and the working tree, counting
+    /// uncommitted and untracked files; null when git cannot tell, such as for an unknown commit.
+    /// </summary>
+    /// <remarks>Paths are relative to <paramref name="root"/> and matched literally, never as globs.</remarks>
+    public static async Task<IReadOnlyList<string>?> ChangedSinceAsync(string root, string commit, IReadOnlyList<string> paths, CancellationToken cancellationToken)
+    {
+        if (paths.Count == 0)
+        {
+            return [];
+        }
+
+        var changed = await TryRunAsync(root, cancellationToken, ["--literal-pathspecs", "diff", "--name-only", "--no-renames", "--relative", "-z", commit, "--", .. paths]);
+        var untracked = await TryRunAsync(root, cancellationToken, ["--literal-pathspecs", "ls-files", "--others", "-z", "--", .. paths]);
+
+        if (changed?.Succeeded != true || untracked?.Succeeded != true)
+        {
+            return null;
+        }
+
+        return [.. (changed.StandardOutput + untracked.StandardOutput)
+            .Split('\0', StringSplitOptions.RemoveEmptyEntries)
+            .Distinct(StringComparer.Ordinal)
+            .Order(StringComparer.Ordinal)];
     }
 
     private static async Task<CommandResult?> TryRunAsync(string root, CancellationToken cancellationToken, params string[] arguments)

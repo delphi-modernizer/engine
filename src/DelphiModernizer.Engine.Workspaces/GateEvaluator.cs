@@ -46,7 +46,8 @@ public sealed class GateEvaluator
                 checks.Insert(0, new GateCheck("previous-gate", previousIsCurrent, $"{previous.Gate} is {previous.State}"));
             }
 
-            var hash = ContentHashOf(gate);
+            var files = FilesOf(gate);
+            var hash = ContentHash.Compute(_workspace.Root, files);
             var approval = ApprovalStore.Current(approvals, gate.Id);
             var state = (approval, checks.All(c => c.Passed)) switch {
                 (not null, _) when approval.ContentHash == hash => "approved",
@@ -55,7 +56,7 @@ public sealed class GateEvaluator
                 _ => "blocked",
             };
 
-            statuses.Add(new GateStatus(gate.Id, gate.Title, gate.Approves, state, [.. checks], approval, hash));
+            statuses.Add(new GateStatus(gate.Id, gate.Name, gate.Title, gate.Approves, state, [.. checks], approval, hash, [.. files]));
             previousIsCurrent = state == "approved";
         }
 

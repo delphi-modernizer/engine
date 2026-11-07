@@ -16,3 +16,14 @@
 
 Every workspace command takes `--workspace <folder>`; without it, `dmz` uses the nearest folder above the current one
 that holds `modernizer.json`. `approve`, `revoke`, `stack` and `init` refuse to run inside an agent session.
+
+`status` and `approve` name each gate as the kit's `gates.json` does, followed by its ID, which `approve` and `revoke`
+take:
+
+```text
+Discovery (G1): approved by Test Person <test@example.com> on 2026-11-07
+The Discovery sign-off was approved by Test Person <test@example.com> (sha256:…).
+```
+
+`dmz status --json` adds each gate's `name` and its `coveredFiles`: the files its content hash covers, relative to the
+workspace.

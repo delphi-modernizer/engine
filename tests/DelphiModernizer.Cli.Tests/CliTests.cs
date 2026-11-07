@@ -61,13 +61,18 @@ public sealed class CliTests : IDisposable
         await InitAsync();
 
         var approve = await Cli.RunAsync(Workspace, string.Empty, _agent, "approve", "G0", "--by", "Agent");
+        var revoke = await Cli.RunAsync(Workspace, string.Empty, _agent, "revoke", "G0", "--by", "Agent", "--note", "x");
         var stack = await Cli.RunAsync(Workspace, string.Empty, _agent, "stack", "dotnet", "--by", "Agent");
+        var nothingRecorded = !File.Exists(Path.Combine(Workspace, ".modernizer", "approvals.json"));
         var person = await Cli.RunAsync(Workspace, string.Empty, null, "approve", "G0", "--by", "Person", "--no-commit");
 
         Assert.Equal(1, approve.ExitCode);
         Assert.Contains("person", approve.Error);
+        Assert.Equal(1, revoke.ExitCode);
         Assert.Equal(1, stack.ExitCode);
+        Assert.True(nothingRecorded);
         Assert.Equal(0, person.ExitCode);
+        Assert.Equal("The Project setup sign-off was approved by Person", person.Output.Split(" (")[0]);
     }
 
     [Fact]
