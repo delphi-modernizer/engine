@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>dmz</AssemblyName>
+    <RootNamespace>DelphiModernizer.Cli</RootNamespace>
+    <IsPackable>true</IsPackable>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>dmz</ToolCommandName>
+    <PackageId>DelphiModernizer.Cli</PackageId>
+    <Description>dmz: create modernization workspaces, scan Delphi trees, check traceability and gates, approve gates and run agent recipes.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.CommandLine" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DelphiModernizer.Engine.Agents\DelphiModernizer.Engine.Agents.csproj" />
+    <ProjectReference Include="..\DelphiModernizer.Engine.Workspaces\DelphiModernizer.Engine.Workspaces.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="DelphiModernizer.Cli.Tests" />
+  </ItemGroup>
+
+</Project>

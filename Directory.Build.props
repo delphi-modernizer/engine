@@ -1,0 +1,63 @@
+<Project>
+
+  <Import Project="$(MSBuildThisFileDirectory)Version.props" />
+
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+
+    <!-- The style requires explicit, ordered using directives. -->
+    <ImplicitUsings>disable</ImplicitUsings>
+
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <AnalysisMode>Default</AnalysisMode>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <Deterministic>true</Deterministic>
+    <InvariantGlobalization>true</InvariantGlobalization>
+
+    <!-- Every vulnerable package, direct or transitive, of any severity, fails restore. -->
+    <NuGetAudit>true</NuGetAudit>
+    <NuGetAuditMode>all</NuGetAuditMode>
+    <NuGetAuditLevel>low</NuGetAuditLevel>
+
+    <Authors>Delphi Modernizer contributors</Authors>
+    <Product>Delphi Modernizer</Product>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/delphi-modernizer/engine</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/delphi-modernizer/engine</RepositoryUrl>
+  </PropertyGroup>
+
+  <!--
+    The layout rules KH0001-KH0007, loaded into every compiler run but the analyzers' own.
+    Platform stays pinned to AnyCPU: an undefined Platform and the solution's Platform=AnyCPU are
+    different global-property sets, and building the analyzer twice into one obj\ fails with CS2012.
+  -->
+  <ItemGroup Condition="'$(MSBuildProjectName)' != 'DelphiModernizer.Analyzers'
+                        AND '$(MSBuildProjectName)' != 'DelphiModernizer.Analyzers.CodeFixes'">
+    <ProjectReference
+        Include="$(MSBuildThisFileDirectory)tools\DelphiModernizer.Analyzers\DelphiModernizer.Analyzers.csproj"
+        OutputItemType="Analyzer"
+        ReferenceOutputAssembly="false"
+        UndefineProperties="TargetFramework;RuntimeIdentifier"
+        AdditionalProperties="Platform=AnyCPU" />
+    <ProjectReference
+        Include="$(MSBuildThisFileDirectory)tools\DelphiModernizer.Analyzers.CodeFixes\DelphiModernizer.Analyzers.CodeFixes.csproj"
+        OutputItemType="Analyzer"
+        ReferenceOutputAssembly="false"
+        UndefineProperties="TargetFramework;RuntimeIdentifier"
+        AdditionalProperties="Platform=AnyCPU" />
+  </ItemGroup>
+
+  <!-- AssemblyVersion stays major.minor.0.0 so a patch release keeps binding. -->
+  <PropertyGroup>
+    <Version>$(VersionMajor).$(VersionMinor).$(VersionPatch)</Version>
+    <VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch)</VersionPrefix>
+    <AssemblyVersion>$(VersionMajor).$(VersionMinor).0.0</AssemblyVersion>
+    <FileVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch).0</FileVersion>
+    <InformationalVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch)</InformationalVersion>
+  </PropertyGroup>
+
+</Project>

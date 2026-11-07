@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>true</IsPackable>
+    <Description>Runs the kit's agent recipes through the Claude Code CLI and turns its event stream into typed events and run records.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DelphiModernizer.Engine.Core\DelphiModernizer.Engine.Core.csproj" />
+    <ProjectReference Include="..\DelphiModernizer.Engine.Kit\DelphiModernizer.Engine.Kit.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="DelphiModernizer.Engine.Agents.Tests" />
+  </ItemGroup>
+
+</Project>

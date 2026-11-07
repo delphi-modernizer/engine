@@ -1,0 +1,9 @@
+globs:
+  - "**/*.md"
+ignores:
+  - "kit/**"
+  - "CLAUDE.md"
+  - "**/bin/**"
+  - "**/obj/**"
+  - "tests/fixtures/**"
+  - "tools/**/AnalyzerReleases.*.md"

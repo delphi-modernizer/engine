@@ -1,0 +1,14 @@
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pfx binary
+*.snk binary
+*.cer binary
+*.ttf binary
+
+# Fixtures are byte-exact legacy files: code pages, CRLF and binary forms must survive checkout.
+tests/fixtures/** -text

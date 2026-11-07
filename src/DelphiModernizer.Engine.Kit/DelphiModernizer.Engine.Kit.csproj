@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>true</IsPackable>
+    <Description>The Delphi Modernizer kit — specification, workspace template and target packs — embedded at the version the engine pins.</Description>
+    <KitRoot Condition="'$(KitRoot)' == ''">$(MSBuildThisFileDirectory)..\..\kit\</KitRoot>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DelphiModernizer.Engine.Core\DelphiModernizer.Engine.Core.csproj" />
+  </ItemGroup>
+
+  <!-- The kit submodule is embedded whole; the engine reads it at run time and hardcodes none of its values. -->
+  <ItemGroup>
+    <EmbeddedResource Include="$(KitRoot)VERSION" LogicalName="kit/VERSION" />
+    <EmbeddedResource Include="$(KitRoot)spec\*.json" LogicalName="kit/spec/%(Filename)%(Extension)" />
+    <EmbeddedResource Include="$(KitRoot)workspace\**\*" LogicalName="kit/workspace/%(RecursiveDir)%(Filename)%(Extension)" />
+    <EmbeddedResource
+        Include="$(KitRoot)targets\**\*"
+        Exclude="$(KitRoot)targets\**\bin\**;$(KitRoot)targets\**\obj\**;$(KitRoot)targets\**\target\**"
+        LogicalName="kit/targets/%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <Target Name="RequireKit" BeforeTargets="BeforeBuild" Condition="!Exists('$(KitRoot)spec\ids.json')">
+    <Error Text="The kit is missing at $(KitRoot). Run: git submodule update --init" />
+  </Target>
+
+</Project>

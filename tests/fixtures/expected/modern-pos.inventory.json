@@ -1,0 +1,556 @@
+{
+  "schemaVersion": 1,
+  "scannerVersion": "test",
+  "sourceFingerprint": "sha256:00636eb382b9ddc5a4e0cd4f8fecef0137079a01a48ca984606d91d22b6b2467",
+  "summary": {
+    "files": 8,
+    "projects": 3,
+    "units": 3,
+    "forms": 1,
+    "dataModules": 0,
+    "binaryForms": 0,
+    "lines": 122,
+    "codeLines": 94,
+    "filesByExtension": [
+      {
+        "name": ".pas",
+        "count": 3
+      },
+      {
+        "name": ".dfm",
+        "count": 1
+      },
+      {
+        "name": ".dpr",
+        "count": 1
+      },
+      {
+        "name": ".dproj",
+        "count": 1
+      },
+      {
+        "name": ".groupproj",
+        "count": 1
+      },
+      {
+        "name": ".inc",
+        "count": 1
+      }
+    ],
+    "encodings": [
+      {
+        "name": "us-ascii",
+        "count": 7
+      },
+      {
+        "name": "utf-8",
+        "count": 1
+      }
+    ],
+    "delphiVersions": [
+      "Delphi 10.4 Sydney to 11 Alexandria"
+    ],
+    "frameworks": [
+      "VCL"
+    ]
+  },
+  "projects": [
+    {
+      "path": "Pos.dpr",
+      "kind": "program",
+      "name": "Pos",
+      "framework": null,
+      "delphiVersion": null,
+      "projectVersion": null,
+      "platforms": [],
+      "defines": [],
+      "references": [
+        {
+          "name": "Vcl.Forms",
+          "path": null
+        },
+        {
+          "name": "Main",
+          "path": "src\\Main.pas"
+        },
+        {
+          "name": "OrderService",
+          "path": "src\\OrderService.pas"
+        },
+        {
+          "name": "Payment",
+          "path": "src\\Payment.pas"
+        }
+      ]
+    },
+    {
+      "path": "Pos.dproj",
+      "kind": "project",
+      "name": "Pos",
+      "framework": "VCL",
+      "delphiVersion": "Delphi 10.4 Sydney to 11 Alexandria",
+      "projectVersion": "19.5",
+      "platforms": [
+        "Win32",
+        "Win64"
+      ],
+      "defines": [
+        "POS_STORE",
+        "RELEASE"
+      ],
+      "references": [
+        {
+          "name": "Pos",
+          "path": "Pos.dpr"
+        },
+        {
+          "name": "Main",
+          "path": "src\\Main.pas"
+        },
+        {
+          "name": "OrderService",
+          "path": "src\\OrderService.pas"
+        },
+        {
+          "name": "Payment",
+          "path": "src\\Payment.pas"
+        }
+      ]
+    },
+    {
+      "path": "Pos.groupproj",
+      "kind": "group",
+      "name": "Pos",
+      "framework": null,
+      "delphiVersion": null,
+      "projectVersion": null,
+      "platforms": [],
+      "defines": [],
+      "references": [
+        {
+          "name": "Pos",
+          "path": "Pos.dproj"
+        }
+      ]
+    }
+  ],
+  "units": [
+    {
+      "name": "Pos",
+      "path": "Pos.dpr",
+      "kind": "program",
+      "lines": 15,
+      "codeLines": 12,
+      "encoding": "us-ascii",
+      "interfaceUses": [
+        "Vcl.Forms",
+        "Main",
+        "OrderService",
+        "Payment"
+      ],
+      "implementationUses": [],
+      "types": [],
+      "routines": 0,
+      "globalVariables": 0,
+      "hasInitialization": false,
+      "hasFinalization": false,
+      "formFile": null,
+      "fanIn": 0,
+      "fanOut": 3
+    },
+    {
+      "name": "Main",
+      "path": "src/Main.pas",
+      "kind": "unit",
+      "lines": 36,
+      "codeLines": 26,
+      "encoding": "utf-8",
+      "interfaceUses": [
+        "System.SysUtils",
+        "System.Classes",
+        "Vcl.Forms",
+        "Vcl.Controls",
+        "Vcl.StdCtrls",
+        "Data.DB",
+        "FireDAC.Comp.Client",
+        "FireDAC.Stan.Def",
+        "cxGrid",
+        "cxGridDBTableView"
+      ],
+      "implementationUses": [
+        "OrderService",
+        "Payment"
+      ],
+      "types": [
+        {
+          "name": "TFrmPos",
+          "kind": "class",
+          "ancestors": [
+            "TForm"
+          ],
+          "line": 10
+        }
+      ],
+      "routines": 1,
+      "globalVariables": 1,
+      "hasInitialization": false,
+      "hasFinalization": false,
+      "formFile": "src/Main.dfm",
+      "fanIn": 1,
+      "fanOut": 2
+    },
+    {
+      "name": "OrderService",
+      "path": "src/OrderService.pas",
+      "kind": "unit",
+      "lines": 42,
+      "codeLines": 33,
+      "encoding": "us-ascii",
+      "interfaceUses": [
+        "System.Classes",
+        "System.Win.ComObj",
+        "System.Variants"
+      ],
+      "implementationUses": [
+        "Payment"
+      ],
+      "types": [
+        {
+          "name": "TOrderWorker",
+          "kind": "class",
+          "ancestors": [
+            "TThread"
+          ],
+          "line": 12
+        }
+      ],
+      "routines": 2,
+      "globalVariables": 0,
+      "hasInitialization": false,
+      "hasFinalization": false,
+      "formFile": null,
+      "fanIn": 3,
+      "fanOut": 1
+    },
+    {
+      "name": "Payment",
+      "path": "src/Payment.pas",
+      "kind": "unit",
+      "lines": 26,
+      "codeLines": 20,
+      "encoding": "us-ascii",
+      "interfaceUses": [],
+      "implementationUses": [
+        "System.SysUtils",
+        "IdHTTP",
+        "OrderService"
+      ],
+      "types": [],
+      "routines": 1,
+      "globalVariables": 0,
+      "hasInitialization": false,
+      "hasFinalization": false,
+      "formFile": null,
+      "fanIn": 3,
+      "fanOut": 1
+    },
+    {
+      "name": "Shared",
+      "path": "src/Shared.inc",
+      "kind": "include",
+      "lines": 3,
+      "codeLines": 3,
+      "encoding": "us-ascii",
+      "interfaceUses": [],
+      "implementationUses": [],
+      "types": [],
+      "routines": 0,
+      "globalVariables": 0,
+      "hasInitialization": false,
+      "hasFinalization": false,
+      "formFile": null,
+      "fanIn": 0,
+      "fanOut": 0
+    }
+  ],
+  "forms": [
+    {
+      "path": "src/Main.dfm",
+      "rootName": "FrmPos",
+      "rootClass": "TFrmPos",
+      "isBinary": false,
+      "components": [
+        {
+          "name": "FrmPos",
+          "className": "TFrmPos",
+          "line": 1,
+          "depth": 0
+        },
+        {
+          "name": "GrdProducts",
+          "className": "TcxGrid",
+          "line": 5,
+          "depth": 1
+        },
+        {
+          "name": "BtnPay",
+          "className": "TButton",
+          "line": 9,
+          "depth": 1
+        },
+        {
+          "name": "FdConnection",
+          "className": "TFDConnection",
+          "line": 15,
+          "depth": 1
+        },
+        {
+          "name": "QryProducts",
+          "className": "TFDQuery",
+          "line": 26,
+          "depth": 1
+        }
+      ],
+      "events": [
+        {
+          "component": "BtnPay",
+          "event": "OnClick",
+          "handler": "BtnPayClick",
+          "line": 13
+        }
+      ]
+    }
+  ],
+  "components": [
+    {
+      "className": "TButton",
+      "count": 1,
+      "vendor": null,
+      "category": "standard"
+    },
+    {
+      "className": "TFDConnection",
+      "count": 1,
+      "vendor": null,
+      "category": "database"
+    },
+    {
+      "className": "TFDQuery",
+      "count": 1,
+      "vendor": null,
+      "category": "database"
+    },
+    {
+      "className": "TcxGrid",
+      "count": 1,
+      "vendor": "DevExpress",
+      "category": "ui"
+    }
+  ],
+  "databaseAccess": [
+    {
+      "name": "FireDAC",
+      "category": "database",
+      "occurrences": 4,
+      "evidence": [
+        {
+          "path": "src/Main.dfm",
+          "line": 15,
+          "detail": "TFDConnection FdConnection"
+        },
+        {
+          "path": "src/Main.dfm",
+          "line": 26,
+          "detail": "TFDQuery QryProducts"
+        },
+        {
+          "path": "src/Main.pas",
+          "line": 0,
+          "detail": "uses FireDAC.Comp.Client"
+        },
+        {
+          "path": "src/Main.pas",
+          "line": 0,
+          "detail": "uses FireDAC.Stan.Def"
+        }
+      ]
+    }
+  ],
+  "thirdParty": [
+    {
+      "name": "DevExpress",
+      "category": "ui",
+      "occurrences": 3,
+      "evidence": [
+        {
+          "path": "src/Main.dfm",
+          "line": 5,
+          "detail": "TcxGrid GrdProducts"
+        },
+        {
+          "path": "src/Main.pas",
+          "line": 0,
+          "detail": "uses cxGrid"
+        },
+        {
+          "path": "src/Main.pas",
+          "line": 0,
+          "detail": "uses cxGridDBTableView"
+        }
+      ]
+    },
+    {
+      "name": "Indy",
+      "category": "network",
+      "occurrences": 1,
+      "evidence": [
+        {
+          "path": "src/Payment.pas",
+          "line": 0,
+          "detail": "uses IdHTTP"
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "path": "src/Main.dfm",
+      "line": 16,
+      "component": "FdConnection",
+      "className": "TFDConnection",
+      "technology": "FireDAC",
+      "details": "Params.Strings=Database=pos;User_Name=pos_user;Password=***;Server=db.internal;DriverID=MSSQL",
+      "hasEmbeddedPassword": true
+    }
+  ],
+  "sql": [
+    {
+      "path": "src/Main.dfm",
+      "line": 28,
+      "source": "form",
+      "owner": "QryProducts",
+      "kind": "select",
+      "text": "select ID, NAME, PRICE from PRODUCT where ACTIVE = 1",
+      "builtByConcatenation": false
+    },
+    {
+      "path": "src/Payment.pas",
+      "line": 17,
+      "source": "code",
+      "owner": null,
+      "kind": "update",
+      "text": "update ORDERS set PAID = 1 where ID = %s",
+      "builtByConcatenation": true
+    }
+  ],
+  "externalRoutines": [],
+  "comObjects": [
+    {
+      "path": "src/OrderService.pas",
+      "line": 37,
+      "progId": "Excel.Application"
+    }
+  ],
+  "riskMarkers": [
+    {
+      "kind": "hard-coded-credential",
+      "path": "src/Main.dfm",
+      "line": 16,
+      "count": 1,
+      "detail": "FdConnection: password stored in the form"
+    },
+    {
+      "kind": "global-state",
+      "path": "src/Main.pas",
+      "line": 0,
+      "count": 1,
+      "detail": "unit-level variables"
+    },
+    {
+      "kind": "overflow-checks",
+      "path": "src/OrderService.pas",
+      "line": 3,
+      "count": 1,
+      "detail": "{$Q-}"
+    },
+    {
+      "kind": "range-checks",
+      "path": "src/OrderService.pas",
+      "line": 4,
+      "count": 1,
+      "detail": "{$R-}"
+    },
+    {
+      "kind": "thread",
+      "path": "src/OrderService.pas",
+      "line": 12,
+      "count": 1,
+      "detail": "class TOrderWorker descends from TThread"
+    },
+    {
+      "kind": "variant",
+      "path": "src/OrderService.pas",
+      "line": 35,
+      "count": 1,
+      "detail": "Variant"
+    },
+    {
+      "kind": "sql-concatenation",
+      "path": "src/Payment.pas",
+      "line": 17,
+      "count": 1,
+      "detail": "update ORDERS set PAID = 1 where ID = %s"
+    },
+    {
+      "kind": "conditional-compilation",
+      "path": "src/Shared.inc",
+      "line": 1,
+      "count": 1,
+      "detail": "{$IFDEF POS_STORE}"
+    }
+  ],
+  "dependencies": {
+    "nodes": 5,
+    "edges": 7,
+    "cycles": [
+      [
+        "OrderService",
+        "Payment"
+      ]
+    ],
+    "topFanIn": [
+      {
+        "name": "OrderService",
+        "count": 3
+      },
+      {
+        "name": "Payment",
+        "count": 3
+      },
+      {
+        "name": "Main",
+        "count": 1
+      }
+    ],
+    "topFanOut": [
+      {
+        "name": "Pos",
+        "count": 3
+      },
+      {
+        "name": "Main",
+        "count": 2
+      },
+      {
+        "name": "OrderService",
+        "count": 1
+      },
+      {
+        "name": "Payment",
+        "count": 1
+      }
+    ]
+  },
+  "unresolvedUnits": [],
+  "diagnostics": []
+}

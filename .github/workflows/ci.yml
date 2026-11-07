@@ -1,0 +1,69 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  comments:
+    uses: delphi-modernizer/.github/.github/workflows/comment-lint.yml@f30fa172da63c775c05b12970b6aa66d3b3495b9
+    with:
+      standards-ref: f30fa172da63c775c05b12970b6aa66d3b3495b9
+
+  drift:
+    uses: delphi-modernizer/.github/.github/workflows/standards-drift.yml@f30fa172da63c775c05b12970b6aa66d3b3495b9
+    with:
+      standards-ref: f30fa172da63c775c05b12970b6aa66d3b3495b9
+      files: |
+        .editorconfig=standards/csharp/.editorconfig
+        tests/.editorconfig=standards/csharp/tests.editorconfig
+        docs/COMMENTS.md=COMMENTS.md
+        docs/csharp-style.md=standards/csharp/csharp-style.md
+
+  dependencies:
+    uses: delphi-modernizer/.github/.github/workflows/dependency-review.yml@f30fa172da63c775c05b12970b6aa66d3b3495b9
+
+  build:
+    uses: delphi-modernizer/.github/.github/workflows/dotnet-ci.yml@f30fa172da63c775c05b12970b6aa66d3b3495b9
+    with:
+      solution: DelphiModernizer.Engine.slnx
+      os: '["ubuntu-latest", "windows-latest"]'
+      submodules: 'true'
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  end-to-end:
+    runs-on: ubuntu-latest
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+      DOTNET_NOLOGO: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: true
+          persist-credentials: false
+      - uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        with:
+          global-json-file: global.json
+      - name: Build dmz
+        run: dotnet build src/DelphiModernizer.Cli -c Release
+      - name: Drive a workspace through its life
+        run: bash eng/e2e.sh
+
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Lint the scripts
+        run: shellcheck eng/*.sh
+      - name: Lint the Markdown
+        run: npx --yes markdownlint-cli2@0.24.0

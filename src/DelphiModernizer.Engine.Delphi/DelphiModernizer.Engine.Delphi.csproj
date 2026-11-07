@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>true</IsPackable>
+    <Description>Static inventory of Delphi source trees: projects, units, forms, dependencies, data access, third-party components, SQL and migration risk markers.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DelphiModernizer.Engine.Core\DelphiModernizer.Engine.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="DelphiModernizer.Engine.Delphi.Tests" />
+  </ItemGroup>
+
+</Project>

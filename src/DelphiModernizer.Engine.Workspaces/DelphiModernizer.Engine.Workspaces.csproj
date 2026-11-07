@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>true</IsPackable>
+    <Description>Modernization workspaces: creation from the kit, the target stack, gates G0-G4, human approvals, the agent guard and run locks.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DelphiModernizer.Engine.Core\DelphiModernizer.Engine.Core.csproj" />
+    <ProjectReference Include="..\DelphiModernizer.Engine.Delphi\DelphiModernizer.Engine.Delphi.csproj" />
+    <ProjectReference Include="..\DelphiModernizer.Engine.Kit\DelphiModernizer.Engine.Kit.csproj" />
+    <ProjectReference Include="..\DelphiModernizer.Engine.Traceability\DelphiModernizer.Engine.Traceability.csproj" />
+  </ItemGroup>
+
+</Project>

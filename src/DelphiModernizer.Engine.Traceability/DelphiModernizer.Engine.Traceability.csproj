@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>true</IsPackable>
+    <Description>Checks a modernization workspace's IDs, references and evidence links against the kit's trace rules, and derives the traceability matrix.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Markdig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DelphiModernizer.Engine.Core\DelphiModernizer.Engine.Core.csproj" />
+    <ProjectReference Include="..\DelphiModernizer.Engine.Kit\DelphiModernizer.Engine.Kit.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="DelphiModernizer.Engine.Traceability.Tests" />
+  </ItemGroup>
+
+</Project>
