@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using DelphiModernizer.Engine.Core;
@@ -83,6 +85,26 @@ public sealed class ApprovalTests
 
         Assert.Null(unapproved);
         Assert.Null(withoutGit);
+    }
+
+    [Theory]
+    [InlineData("--output=pwned.txt")]
+    [InlineData("-opwned.txt")]
+    [InlineData("HEAD")]
+    public async Task A_tampered_approval_commit_is_unknown_and_never_reaches_git_as_an_option(string commit)
+    {
+        using var test = await TestWorkspace.CreateAsync();
+        await CommitEverythingAsync(test);
+        await ApprovalService.ApproveAsync(test.Workspace, "G0", "Reviewer", "ok", commit: false, CancellationToken.None);
+        var approvals = Path.Combine(test.Root, ".modernizer", "approvals.json");
+        var log = JsonNode.Parse(await File.ReadAllTextAsync(approvals, CancellationToken.None))!;
+        log["entries"]![0]!["commit"] = commit;
+        await File.WriteAllTextAsync(approvals, log.ToJsonString(), CancellationToken.None);
+
+        var changed = await ChangedAsync(test);
+
+        Assert.Null(changed);
+        Assert.False(File.Exists(Path.Combine(test.Root, "pwned.txt")));
     }
 
     private static async Task<IReadOnlyList<string>?> ChangedAsync(TestWorkspace test)
