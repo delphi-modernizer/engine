@@ -45,4 +45,8 @@ Renaming a property in any of these breaks existing workspaces or the studio:
 | `.modernizer/runs/<id>.json` | `RunSummary` | this engine |
 | `dmz trace --json`, `dmz status --json` | `TraceReport`, `GateStatus[]` | this engine |
 
+An approval or revocation with a commit records `.modernizer/approvals.json` alone, with the subject
+`chore: approve the <name> sign-off` or `chore: revoke the <name> sign-off` and a `Gate: <id>` trailer; `<name>` comes
+from the kit's `gates.json`. Tools find approval commits by the trailer.
+
 All JSON goes through source-generated `JsonSerializerContext`s: no reflection, camelCase names.

@@ -1,6 +1,9 @@
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DelphiModernizer.Engine.Core;
+using DelphiModernizer.Engine.Kit;
 using Xunit;
 
 namespace DelphiModernizer.Engine.Workspaces.Tests;
@@ -19,6 +22,21 @@ public sealed class GateTests
         Assert.Equal("ready", gates[0].State);
         Assert.All(gates.Skip(1), g => Assert.Equal("blocked", g.State));
         Assert.Contains(gates[1].Checks, c => c.Name == "scan-present" && !c.Passed);
+    }
+
+    [Fact]
+    public async Task Each_gate_carries_its_kit_name_and_the_sorted_files_its_hash_covers()
+    {
+        using var test = await TestWorkspace.CreateAsync();
+
+        var gates = new GateEvaluator(test.Workspace).Evaluate();
+
+        Assert.Equal(KitBundle.Embedded.Spec.Gates.Gates.Select(g => g.Name), gates.Select(g => g.Name));
+        Assert.All(gates, g => Assert.Equal(g.ContentHash, ContentHash.Compute(test.Root, g.CoveredFiles)));
+        Assert.All(gates, g => Assert.Equal(g.CoveredFiles.Order(StringComparer.Ordinal), g.CoveredFiles));
+        Assert.Contains(Charter, gates[0].CoveredFiles);
+        Assert.Contains("docs/00-project-charter/assumptions.md", gates[0].CoveredFiles);
+        Assert.Contains("modernizer.json", gates[0].CoveredFiles);
     }
 
     [Fact]

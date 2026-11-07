@@ -66,6 +66,7 @@ public sealed class AgentRunnerTests : IDisposable
         });
 
         Assert.Equal("cancelled", Summary().Outcome);
+        using var released = File.Open(Path.Combine(_root, "script.ndjson"), FileMode.Open, FileAccess.ReadWrite, FileShare.None);
     }
 
     [Fact]

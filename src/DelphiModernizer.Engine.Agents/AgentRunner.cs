@@ -24,6 +24,8 @@ public sealed class AgentRunner(ClaudeExecutable executable)
 
     private const int _channelCapacity = 256;
 
+    private static readonly TimeSpan _exitAfterKillTimeout = TimeSpan.FromSeconds(10);
+
     public IAsyncEnumerable<AgentEvent> RunAsync(AgentRunRequest request, CancellationToken cancellationToken)
     {
         if (request.Prompt.Length > MaximumPromptLength)
@@ -74,12 +76,32 @@ public sealed class AgentRunner(ClaudeExecutable executable)
         {
             if (!process.HasExited)
             {
-                process.Kill(entireProcessTree: true);
+                await KillAsync(process);
             }
 
             await transcript.DisposeAsync();
             var outcome = completed ?? new RunCompleted("cancelled", true, "The run was stopped.", null, null, null, 0);
             WriteSummary(runs, request, startedAt, outcome);
+        }
+    }
+
+    /// <summary>Kills the CLI's process tree and waits for it to exit, so no file it holds outlives the run.</summary>
+    /// <remarks>
+    /// Kill only starts termination; on Windows the process keeps its open files until it has exited. A run that ended
+    /// before then let the next run, or the caller's cleanup, race a dying CLI.
+    /// </remarks>
+    private static async Task KillAsync(Process process)
+    {
+        process.Kill(entireProcessTree: true);
+        using var timeout = new CancellationTokenSource(_exitAfterKillTimeout);
+
+        try
+        {
+            await process.WaitForExitAsync(timeout.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            // The run still ends and records its outcome; a process that ignores a kill is the system's to reap.
         }
     }
 

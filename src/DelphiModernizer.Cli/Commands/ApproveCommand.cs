@@ -1,5 +1,7 @@
 using System.CommandLine;
+using System.Linq;
 using DelphiModernizer.Engine.Core;
+using DelphiModernizer.Engine.Kit;
 using DelphiModernizer.Engine.Workspaces;
 
 namespace DelphiModernizer.Cli.Commands;
@@ -49,7 +51,10 @@ internal static class ApproveCommand
                 return CommonOptions.Fail(context, result.Error);
             }
 
-            await context.Output.WriteLineAsync($"{gateId} {(verb == "approve" ? "approved" : "revoked")} by {result.Value.By} ({result.Value.ContentHash}).");
+            var name = KitBundle.Embedded.Spec.Gates.Gates
+                .Single(g => g.Id == gateId)
+                .Name;
+            await context.Output.WriteLineAsync($"The {name} sign-off was {(verb == "approve" ? "approved" : "revoked")} by {result.Value.By} ({result.Value.ContentHash}).");
 
             return ExitCodes.Success;
         });

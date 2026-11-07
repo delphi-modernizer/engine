@@ -47,8 +47,14 @@ internal sealed class TestWorkspace : IDisposable
         File.WriteAllText(Path.Combine(Root, relative), text);
     }
 
+    /// <remarks>Git writes its objects read-only, and Windows refuses to delete a read-only file.</remarks>
     public void Dispose()
     {
+        foreach (var file in Directory.EnumerateFiles(_parent, "*", SearchOption.AllDirectories))
+        {
+            File.SetAttributes(file, FileAttributes.Normal);
+        }
+
         Directory.Delete(_parent, recursive: true);
     }
 }
