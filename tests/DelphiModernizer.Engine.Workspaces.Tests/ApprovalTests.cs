@@ -21,9 +21,9 @@ public sealed class ApprovalTests
         await CommitEverythingAsync(test);
 
         await ApprovalService.ApproveAsync(test.Workspace, "G0", "Reviewer", "ok", commit: true, CancellationToken.None);
-        var message = await GitAsync(test, "log", "-1", "--format=%B");
-        var trailer = await GitAsync(test, "log", "-1", "--format=%(trailers:key=Gate,valueonly)");
-        var files = await GitAsync(test, "show", "--name-only", "--format=", "HEAD");
+        string message = await GitAsync(test, "log", "-1", "--format=%B");
+        string trailer = await GitAsync(test, "log", "-1", "--format=%(trailers:key=Gate,valueonly)");
+        string files = await GitAsync(test, "show", "--name-only", "--format=", "HEAD");
 
         Assert.Equal("chore: approve the Project setup sign-off\n\nGate: G0", message.Trim());
         Assert.Equal("G0", trailer.Trim());
@@ -37,7 +37,7 @@ public sealed class ApprovalTests
         await CommitEverythingAsync(test);
 
         await ApprovalService.RevokeAsync(test.Workspace, "G1", "Reviewer", "reopened", commit: true, CancellationToken.None);
-        var message = await GitAsync(test, "log", "-1", "--format=%B");
+        string message = await GitAsync(test, "log", "-1", "--format=%B");
 
         Assert.Equal("chore: revoke the Discovery sign-off\n\nGate: G1", message.Trim());
     }
@@ -96,7 +96,7 @@ public sealed class ApprovalTests
         using var test = await TestWorkspace.CreateAsync();
         await CommitEverythingAsync(test);
         await ApprovalService.ApproveAsync(test.Workspace, "G0", "Reviewer", "ok", commit: false, CancellationToken.None);
-        var approvals = Path.Combine(test.Root, ".modernizer", "approvals.json");
+        string approvals = Path.Combine(test.Root, ".modernizer", "approvals.json");
         var log = JsonNode.Parse(await File.ReadAllTextAsync(approvals, CancellationToken.None))!;
         log["entries"]![0]!["commit"] = commit;
         await File.WriteAllTextAsync(approvals, log.ToJsonString(), CancellationToken.None);

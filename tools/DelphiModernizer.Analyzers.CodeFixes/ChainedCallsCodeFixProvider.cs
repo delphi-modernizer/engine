@@ -30,7 +30,7 @@ public sealed class ChainedCallsCodeFixProvider : CodeFixProvider
 
     /// <inheritdoc/>
     public override ImmutableArray<string> FixableDiagnosticIds { get; } =
-        ImmutableArray.Create("KH0006");
+        ["KH0006"];
 
     /// <inheritdoc/>
     public override FixAllProvider GetFixAllProvider()
@@ -102,8 +102,8 @@ public sealed class ChainedCallsCodeFixProvider : CodeFixProvider
 
         // Computed here: `dotnet format` keeps a line break inside an expression without indenting it.
         var text = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
-        var line = text.Lines.GetLineFromPosition(chain.SpanStart).ToString();
-        var indent = line.Substring(0, line.Length - line.TrimStart().Length) + _indentUnit;
+        string line = text.Lines.GetLineFromPosition(chain.SpanStart).ToString();
+        string indent = line.Substring(0, line.Length - line.TrimStart().Length) + _indentUnit;
 
         var updated = chain.ReplaceTokens(
             dots,

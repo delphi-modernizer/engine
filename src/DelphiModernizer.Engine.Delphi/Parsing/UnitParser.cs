@@ -55,7 +55,7 @@ internal sealed class UnitParser
     {
         var (kind, name, start) = ReadHeader();
 
-        var i = start;
+        int i = start;
 
         while (i < _tokens.Count)
         {
@@ -81,9 +81,9 @@ internal sealed class UnitParser
     {
         string[] kinds = ["unit", "program", "library", "package"];
 
-        for (var i = 0; i < _tokens.Count; i++)
+        for (int i = 0; i < _tokens.Count; i++)
         {
-            var kind = Array.Find(kinds, _tokens[i].Is);
+            string? kind = Array.Find(kinds, _tokens[i].Is);
 
             if (kind is not null)
             {
@@ -99,7 +99,7 @@ internal sealed class UnitParser
     private int Visit(int i, string kind)
     {
         var token = _tokens[i];
-        var atUnitLevel = _blocks.Count == 0;
+        bool atUnitLevel = _blocks.Count == 0;
 
         if (atUnitLevel && token.Is("uses"))
         {
@@ -203,7 +203,7 @@ internal sealed class UnitParser
 
     private int ReadTypeDeclaration(int equals)
     {
-        var next = equals + 1;
+        int next = equals + 1;
 
         if (_tokens[next].Is("packed"))
         {
@@ -216,7 +216,7 @@ internal sealed class UnitParser
         }
 
         var keyword = _tokens[next];
-        var typeKind = keyword switch {
+        string? typeKind = keyword switch {
             _ when keyword.Is("class") => "class",
             _ when keyword.Is("interface") || keyword.Is("dispinterface") => "interface",
             _ when keyword.Is("record") => "record",
@@ -224,7 +224,7 @@ internal sealed class UnitParser
             _ => null,
         };
 
-        if (typeKind is null || !TryReadTypeName(equals - 1, out var name))
+        if (typeKind is null || !TryReadTypeName(equals - 1, out string name))
         {
             return equals;
         }
@@ -236,7 +236,7 @@ internal sealed class UnitParser
             return next + 1;
         }
 
-        var cursor = next + 1;
+        int cursor = next + 1;
 
         if (typeKind is "class" or "record" && after.Is("helper"))
         {
@@ -290,9 +290,9 @@ internal sealed class UnitParser
             return false;
         }
 
-        var nesting = 0;
+        int nesting = 0;
 
-        for (var i = index; i > 0; i--)
+        for (int i = index; i > 0; i--)
         {
             nesting += NestingDelta(_tokens[i], ">", "<");
 
@@ -310,8 +310,8 @@ internal sealed class UnitParser
     private int ReadAncestors(int start, List<string> ancestors)
     {
         var current = new List<string>();
-        var nesting = 0;
-        var i = start;
+        int nesting = 0;
+        int i = start;
 
         for (; i < _tokens.Count; i++)
         {
@@ -349,9 +349,9 @@ internal sealed class UnitParser
             return start;
         }
 
-        var end = SkipPast(start, t => t.IsSymbol(";"), parenthesesAware: true);
-        var directive = end + 1;
-        var hasBody = true;
+        int end = SkipPast(start, t => t.IsSymbol(";"), parenthesesAware: true);
+        int directive = end + 1;
+        bool hasBody = true;
 
         while (directive < _tokens.Count && _tokens[directive].Kind == TokenKind.Identifier && !IsDeclarationKeyword(_tokens[directive]))
         {
@@ -363,7 +363,7 @@ internal sealed class UnitParser
             directive = SkipPast(directive, t => t.IsSymbol(";"), parenthesesAware: true) + 1;
         }
 
-        var countsAsImplementation = _section == "implementation" || (_section == "header" && kind is "program" or "library");
+        bool countsAsImplementation = _section == "implementation" || (_section == "header" && kind is "program" or "library");
 
         if (hasBody && countsAsImplementation)
         {
@@ -376,11 +376,11 @@ internal sealed class UnitParser
 
     private int ReadVariables(int start)
     {
-        var i = start;
+        int i = start;
 
         while (i < _tokens.Count && !IsDeclarationKeyword(_tokens[i]))
         {
-            var identifiers = 0;
+            int identifiers = 0;
 
             while (i < _tokens.Count && !_tokens[i].IsSymbol(":") && !_tokens[i].IsSymbol(";"))
             {
@@ -397,14 +397,14 @@ internal sealed class UnitParser
 
     private int ReadUsesList(int start, List<UsesEntry> target)
     {
-        var i = start;
-        var firstLine = Peek(start).Line;
+        int i = start;
+        int firstLine = Peek(start).Line;
 
         while (i < _tokens.Count && !_tokens[i].IsSymbol(";"))
         {
             if (_tokens[i].Kind == TokenKind.Identifier)
             {
-                var line = _tokens[i].Line;
+                int line = _tokens[i].Line;
                 var (name, next) = ReadDottedName(i);
                 string? path = null;
 
@@ -427,7 +427,7 @@ internal sealed class UnitParser
             i++;
         }
 
-        var lastLine = Peek(i).Line;
+        int lastLine = Peek(i).Line;
         _conditionalUses |= _all.Any(t => t.Kind == TokenKind.Directive && t.Line >= firstLine && t.Line <= lastLine && IsConditional(t.Text));
 
         return i;
@@ -435,7 +435,7 @@ internal sealed class UnitParser
 
     private int ReadRequires(int start)
     {
-        var i = start;
+        int i = start;
 
         while (i < _tokens.Count && !_tokens[i].IsSymbol(";"))
         {
@@ -467,7 +467,7 @@ internal sealed class UnitParser
         }
 
         var parts = new List<string> { _tokens[start].Text };
-        var i = start + 1;
+        int i = start + 1;
 
         while (Peek(i).IsSymbol(".") && Peek(i + 1).Kind == TokenKind.Identifier)
         {
@@ -480,10 +480,10 @@ internal sealed class UnitParser
 
     private int SkipPast(int start, Func<Token, bool> stop, bool parenthesesAware = false, bool recordAware = false)
     {
-        var parentheses = 0;
-        var records = 0;
+        int parentheses = 0;
+        int records = 0;
 
-        for (var i = start; i < _tokens.Count; i++)
+        for (int i = start; i < _tokens.Count; i++)
         {
             var token = _tokens[i];
 
@@ -537,7 +537,7 @@ internal sealed class UnitParser
 
     private static bool IsConditional(string directive)
     {
-        var body = directive.TrimStart('{', '(', '*', '$');
+        string body = directive.TrimStart('{', '(', '*', '$');
 
         return body.StartsWith("IF", StringComparison.OrdinalIgnoreCase)
             || body.StartsWith("ELSE", StringComparison.OrdinalIgnoreCase)

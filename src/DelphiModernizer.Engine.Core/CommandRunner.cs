@@ -27,7 +27,7 @@ public static class CommandRunner
             CreateNoWindow = true,
         };
 
-        foreach (var argument in arguments)
+        foreach (string argument in arguments)
         {
             startInfo.ArgumentList.Add(argument);
         }

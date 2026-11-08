@@ -20,7 +20,7 @@ public sealed class BlankLineCodeFixProvider : CodeFixProvider
 
     /// <inheritdoc/>
     public override ImmutableArray<string> FixableDiagnosticIds { get; } =
-        ImmutableArray.Create("KH0001", "KH0002", "KH0003", "KH0004");
+        ["KH0001", "KH0002", "KH0003", "KH0004"];
 
     /// <inheritdoc/>
     public override FixAllProvider GetFixAllProvider()
@@ -79,9 +79,9 @@ public sealed class BlankLineCodeFixProvider : CodeFixProvider
 
         // Ahead of the comment block, not between the comment and its subject: everything from
         // the first attached comment onwards moves down together.
-        var insertAt = leading.Count;
+        int insertAt = leading.Count;
 
-        for (var i = leading.Count - 1; i >= 0; i--)
+        for (int i = leading.Count - 1; i >= 0; i--)
         {
             var trivia = leading[i];
 

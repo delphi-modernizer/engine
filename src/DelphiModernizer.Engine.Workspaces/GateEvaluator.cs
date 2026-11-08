@@ -34,7 +34,7 @@ public sealed class GateEvaluator
     {
         var approvals = ApprovalStore.Read(_workspace.Root);
         var statuses = new List<GateStatus>();
-        var previousIsCurrent = true;
+        bool previousIsCurrent = true;
 
         foreach (var gate in _spec.Gates.Gates)
         {
@@ -47,9 +47,9 @@ public sealed class GateEvaluator
             }
 
             var files = FilesOf(gate);
-            var hash = ContentHash.Compute(_workspace.Root, files);
+            string hash = ContentHash.Compute(_workspace.Root, files);
             var approval = ApprovalStore.Current(approvals, gate.Id);
-            var state = (approval, checks.All(c => c.Passed)) switch {
+            string state = (approval, checks.All(c => c.Passed)) switch {
                 (not null, _) when approval.ContentHash == hash => "approved",
                 (not null, _) => "stale",
                 (null, true) => "ready",
@@ -93,13 +93,13 @@ public sealed class GateEvaluator
 
         foreach (var requirement in gate.Requires.Deliverables)
         {
-            var status = states.TryGetValue(requirement.Id, out var state) ? state.Status : "missing";
-            var passed = Array.IndexOf(_statusOrder, status) >= Array.IndexOf(_statusOrder, requirement.MinStatus);
+            string status = states.TryGetValue(requirement.Id, out var state) ? state.Status : "missing";
+            bool passed = Array.IndexOf(_statusOrder, status) >= Array.IndexOf(_statusOrder, requirement.MinStatus);
 
             yield return new GateCheck($"{requirement.Id} is {requirement.MinStatus}", passed, $"{requirement.Id} is {status}");
         }
 
-        foreach (var condition in gate.Requires.Conditions)
+        foreach (string condition in gate.Requires.Conditions)
         {
             var (passed, detail) = Condition(condition);
 
@@ -126,7 +126,7 @@ public sealed class GateEvaluator
 
     private (bool Passed, string Detail) ScanIsCurrent()
     {
-        var inventory = Path.Combine(_workspace.LatestScanFolder, "inventory.json");
+        string inventory = Path.Combine(_workspace.LatestScanFolder, "inventory.json");
 
         if (!File.Exists(inventory))
         {
@@ -134,7 +134,7 @@ public sealed class GateEvaluator
         }
 
         using var document = JsonDocument.Parse(File.ReadAllBytes(inventory));
-        var scanned = document.RootElement
+        string? scanned = document.RootElement
             .GetProperty("sourceFingerprint")
             .GetString();
 
@@ -145,18 +145,18 @@ public sealed class GateEvaluator
 
     private IEnumerable<string> SupportingFiles(HashSet<string> deliverables)
     {
-        var docs = Path.Combine(_workspace.Root, "docs");
+        string docs = Path.Combine(_workspace.Root, "docs");
 
         if (!Directory.Exists(docs))
         {
             yield break;
         }
 
-        foreach (var path in Directory.EnumerateFiles(docs, "*.md", SearchOption.AllDirectories))
+        foreach (string path in Directory.EnumerateFiles(docs, "*.md", SearchOption.AllDirectories))
         {
-            var partOf = FrontMatter.Read(File.ReadAllText(path))?.GetValueOrDefault("part-of");
+            string? partOf = FrontMatter.Read(File.ReadAllText(path))?.GetValueOrDefault("part-of");
 
-            var isTemplate = Path
+            bool isTemplate = Path
                 .GetFileName(path)
                 .StartsWith('_');
 

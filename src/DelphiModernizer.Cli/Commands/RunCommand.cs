@@ -32,7 +32,7 @@ internal static class RunCommand
                 return CommonOptions.Fail(context, opened.Error);
             }
 
-            var recipeId = parseResult.GetRequiredValue(recipe);
+            string recipeId = parseResult.GetRequiredValue(recipe);
             var chosen = KitBundle.Embedded.Spec.Recipes.Recipes.FirstOrDefault(r => r.Id == recipeId);
 
             if (chosen is null)

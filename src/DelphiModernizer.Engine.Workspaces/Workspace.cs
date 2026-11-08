@@ -75,6 +75,6 @@ public sealed class Workspace
 
     private static int Major(string version)
     {
-        return int.TryParse(version.Split('.')[0], out var major) ? major : 0;
+        return int.TryParse(version.Split('.')[0], out int major) ? major : 0;
     }
 }

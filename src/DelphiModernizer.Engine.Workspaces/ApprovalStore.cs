@@ -14,7 +14,7 @@ internal static class ApprovalStore
 
     public static ApprovalLog Read(string root)
     {
-        var path = PathOf(root);
+        string path = PathOf(root);
 
         return File.Exists(path)
             ? JsonSerializer.Deserialize(File.ReadAllBytes(path), WorkspaceJsonContext.Default.ApprovalLog) ?? ApprovalLog.Empty

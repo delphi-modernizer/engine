@@ -16,7 +16,7 @@ internal static partial class ToolRefusals
     /// <summary>The refusal's tool and reason, or null when the text is an ordinary failure.</summary>
     public static (string Tool, string Reason)? Recognise(string content)
     {
-        var text = Unwrap(content.Trim());
+        string text = Unwrap(content.Trim());
         var hook = HookRefusal().Match(text);
 
         if (hook.Success)
@@ -31,7 +31,7 @@ internal static partial class ToolRefusals
 
     private static string Unwrap(string text)
     {
-        var wrapped = text.StartsWith(_errorOpen, StringComparison.Ordinal)
+        bool wrapped = text.StartsWith(_errorOpen, StringComparison.Ordinal)
             && text.EndsWith(_errorClose, StringComparison.Ordinal);
 
         return wrapped ? text[_errorOpen.Length..^_errorClose.Length].Trim() : text;
@@ -40,9 +40,9 @@ internal static partial class ToolRefusals
     /// <summary>The text up to the first sentence end after <paramref name="from"/>, where the advice begins.</summary>
     private static string FirstSentence(string text, int from)
     {
-        var end = text.IndexOfAny(['\n', '\r'], from);
-        var line = end < 0 ? text : text[..end];
-        var stop = line.IndexOf(". ", from, StringComparison.Ordinal);
+        int end = text.IndexOfAny(['\n', '\r'], from);
+        string line = end < 0 ? text : text[..end];
+        int stop = line.IndexOf(". ", from, StringComparison.Ordinal);
 
         return stop < 0 ? line.TrimEnd() : line[..(stop + 1)];
     }

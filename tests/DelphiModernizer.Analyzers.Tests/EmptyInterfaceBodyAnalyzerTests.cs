@@ -21,7 +21,7 @@ public sealed class EmptyInterfaceBodyAnalyzerTests
             }
             """;
 
-        var lines = await Harness.LinesAsync(CreateAnalyzer(), source);
+        int[] lines = await Harness.LinesAsync(CreateAnalyzer(), source);
 
         Assert.Equal([3], lines);
     }
@@ -51,7 +51,7 @@ public sealed class EmptyInterfaceBodyAnalyzerTests
             }
             """;
 
-        var lines = await Harness.LinesAsync(CreateAnalyzer(), source);
+        int[] lines = await Harness.LinesAsync(CreateAnalyzer(), source);
 
         Assert.Equal([5], lines);
     }
@@ -70,7 +70,7 @@ public sealed class EmptyInterfaceBodyAnalyzerTests
             }
             """;
 
-        var lines = await Harness.LinesAsync(CreateAnalyzer(), source);
+        int[] lines = await Harness.LinesAsync(CreateAnalyzer(), source);
 
         Assert.Equal([5], lines);
     }

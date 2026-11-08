@@ -82,8 +82,8 @@ internal sealed class MarkdownReader
             _headings.Pop();
         }
 
-        var text = PlainText(heading.Inline);
-        var id = _patterns.LeadingId(text);
+        string text = PlainText(heading.Inline);
+        string? id = _patterns.LeadingId(text);
         RecordDefinition? record = null;
 
         if (id is not null)
@@ -119,14 +119,14 @@ internal sealed class MarkdownReader
             var cells = row
                 .OfType<TableCell>()
                 .ToList();
-            var first = cells.Count > 0 ? CellText(cells[0]).Trim('*', ' ') : string.Empty;
+            string first = cells.Count > 0 ? CellText(cells[0]).Trim('*', ' ') : string.Empty;
             var owner = _owner;
 
             if (_patterns.IsId(first))
             {
                 var values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-                for (var i = 0; i < cells.Count && i < columns.Count; i++)
+                for (int i = 0; i < cells.Count && i < columns.Count; i++)
                 {
                     values[columns[i]] = CellText(cells[i]);
                 }
@@ -212,9 +212,9 @@ internal sealed class MarkdownReader
     {
         var values = new Dictionary<string, string>(StringComparer.Ordinal);
 
-        foreach (var line in yaml.Lines.Lines.Select(l => l.ToString()))
+        foreach (string line in yaml.Lines.Lines.Select(l => l.ToString()))
         {
-            var separator = line.IndexOf(':');
+            int separator = line.IndexOf(':');
 
             if (line.StartsWith("---", StringComparison.Ordinal) || separator <= 0)
             {

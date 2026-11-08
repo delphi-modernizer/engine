@@ -21,7 +21,7 @@ internal sealed class IdPatterns
 
     public IdPatterns(IdsSpec ids, TraceRulesSpec rules)
     {
-        var alternatives = string.Join('|', ids.Kinds.Select(k => $"(?:{k.Pattern})"));
+        string alternatives = string.Join('|', ids.Kinds.Select(k => $"(?:{k.Pattern})"));
         const RegexOptions options = RegexOptions.CultureInvariant;
 
         _anywhere = new Regex($"{ids.Delimiters.Before}(?:{alternatives}){ids.Delimiters.After}", options, _timeout);
@@ -64,10 +64,10 @@ internal sealed class IdPatterns
     {
         foreach (Match match in _evidence.Matches(text))
         {
-            var path = Uri.UnescapeDataString(match.Groups[_groups.Path].Value);
-            var start = int.Parse(match.Groups[_groups.Start].Value, System.Globalization.CultureInfo.InvariantCulture);
+            string path = Uri.UnescapeDataString(match.Groups[_groups.Path].Value);
+            int start = int.Parse(match.Groups[_groups.Start].Value, System.Globalization.CultureInfo.InvariantCulture);
             var endGroup = match.Groups[_groups.End];
-            var end = endGroup.Success ? int.Parse(endGroup.Value, System.Globalization.CultureInfo.InvariantCulture) : start;
+            int end = endGroup.Success ? int.Parse(endGroup.Value, System.Globalization.CultureInfo.InvariantCulture) : start;
 
             yield return new EvidenceLink(path, start, end, line, match.Value);
         }

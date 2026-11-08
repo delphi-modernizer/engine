@@ -42,8 +42,8 @@ public static class TargetStacks
 
     internal static void RecordDecision(string root, string stack, string decidedBy)
     {
-        var id = Registers.NextId(root, Registers.DecisionLog, "DEC");
-        var date = DateTimeOffset.UtcNow.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+        string id = Registers.NextId(root, Registers.DecisionLog, "DEC");
+        string date = DateTimeOffset.UtcNow.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
         Registers.AppendRow(
             root,
             Registers.DecisionLog,
@@ -61,7 +61,7 @@ public static class TargetStacks
     {
         foreach (var file in KitBundle.Embedded.TargetPackFiles(stack))
         {
-            var path = Path.Combine(root, file.Path);
+            string path = Path.Combine(root, file.Path);
 
             if (!File.Exists(path))
             {

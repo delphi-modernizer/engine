@@ -27,8 +27,8 @@ public sealed class InitializerTests
     public async Task Each_unknown_part_of_the_context_is_an_open_question_the_charter_points_to()
     {
         using var test = await TestWorkspace.CreateAsync();
-        var questions = test.Read("docs/00-project-charter/open-questions.md");
-        var charter = test.Read("docs/00-project-charter/D01-project-charter.md");
+        string questions = test.Read("docs/00-project-charter/open-questions.md");
+        string charter = test.Read("docs/00-project-charter/D01-project-charter.md");
 
         Assert.Contains("| Q-002 | What should the modernization achieve?", questions);
         Assert.Contains("| Q-003 | What downtime does the business tolerate", questions);
@@ -40,7 +40,7 @@ public sealed class InitializerTests
     [Fact]
     public async Task Progress_names_every_step_in_order_and_what_it_produced()
     {
-        var parent = Directory.CreateTempSubdirectory("dmz-progress-").FullName;
+        string parent = Directory.CreateTempSubdirectory("dmz-progress-").FullName;
         var reports = new List<InitProgress>();
         var request = Request(Path.Combine(parent, "ws"), Fixtures.Delphi("legacy-erp")) with { InitializeGit = false };
 
@@ -68,7 +68,7 @@ public sealed class InitializerTests
     public async Task A_non_empty_folder_and_a_tree_without_delphi_are_refused()
     {
         using var test = await TestWorkspace.CreateAsync();
-        var empty = Directory.CreateTempSubdirectory("dmz-empty-").FullName;
+        string empty = Directory.CreateTempSubdirectory("dmz-empty-").FullName;
 
         var intoExisting = await WorkspaceInitializer.InitializeAsync(Request(test.Root, Fixtures.Delphi("legacy-erp")), null, CancellationToken.None);
         var fromNothing = await WorkspaceInitializer.InitializeAsync(Request(Path.Combine(empty, "ws"), empty), null, CancellationToken.None);

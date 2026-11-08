@@ -17,7 +17,7 @@ internal static class Layout
     /// </remarks>
     internal static bool IsSeparatedFrom(SyntaxNode node, SyntaxNode previous)
     {
-        var previousEnd = previous.GetLocation().GetLineSpan().EndLinePosition.Line;
+        int previousEnd = previous.GetLocation().GetLineSpan().EndLinePosition.Line;
 
         return AttachedStartLine(node) - previousEnd >= 2;
     }
@@ -34,10 +34,10 @@ internal static class Layout
     {
         var token = node.GetFirstToken();
         var leading = token.LeadingTrivia;
-        var start = node.GetLocation().GetLineSpan().StartLinePosition.Line;
-        var consecutiveEndOfLines = 0;
+        int start = node.GetLocation().GetLineSpan().StartLinePosition.Line;
+        int consecutiveEndOfLines = 0;
 
-        for (var i = leading.Count - 1; i >= 0; i--)
+        for (int i = leading.Count - 1; i >= 0; i--)
         {
             var trivia = leading[i];
 

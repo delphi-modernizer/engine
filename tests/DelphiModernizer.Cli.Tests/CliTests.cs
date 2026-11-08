@@ -63,7 +63,7 @@ public sealed class CliTests : IDisposable
         var approve = await Cli.RunAsync(Workspace, string.Empty, _agent, "approve", "G0", "--by", "Agent");
         var revoke = await Cli.RunAsync(Workspace, string.Empty, _agent, "revoke", "G0", "--by", "Agent", "--note", "x");
         var stack = await Cli.RunAsync(Workspace, string.Empty, _agent, "stack", "dotnet", "--by", "Agent");
-        var nothingRecorded = !File.Exists(Path.Combine(Workspace, ".modernizer", "approvals.json"));
+        bool nothingRecorded = !File.Exists(Path.Combine(Workspace, ".modernizer", "approvals.json"));
         var person = await Cli.RunAsync(Workspace, string.Empty, null, "approve", "G0", "--by", "Person", "--no-commit");
 
         Assert.Equal(1, approve.ExitCode);
@@ -79,7 +79,7 @@ public sealed class CliTests : IDisposable
     public async Task The_guard_blocks_with_exit_code_2_and_fails_closed()
     {
         await InitAsync();
-        var hook = JsonSerializer.Serialize(new { tool_name = "Edit", cwd = Workspace, tool_input = new { file_path = "legacy/Sales/Pricing.pas" } });
+        string hook = JsonSerializer.Serialize(new { tool_name = "Edit", cwd = Workspace, tool_input = new { file_path = "legacy/Sales/Pricing.pas" } });
 
         var denied = await Cli.RunAsync(Workspace, hook, null, "guard", "pre-tool-use");
         var garbage = await Cli.RunAsync(Workspace, "{", null, "guard", "pre-tool-use");
@@ -120,7 +120,7 @@ public sealed class CliTests : IDisposable
     {
         for (var directory = new DirectoryInfo(AppContext.BaseDirectory); directory is not null; directory = directory.Parent)
         {
-            var candidate = Path.Combine(directory.FullName, "tests", "fixtures", "delphi", "legacy-erp");
+            string candidate = Path.Combine(directory.FullName, "tests", "fixtures", "delphi", "legacy-erp");
 
             if (Directory.Exists(candidate))
             {

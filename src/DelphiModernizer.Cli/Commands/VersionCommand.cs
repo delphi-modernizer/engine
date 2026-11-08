@@ -12,7 +12,7 @@ internal static class VersionCommand
         var command = new Command("version", "Show the engine and kit versions.");
 
         command.SetAction(async (_, _) => {
-            var version = typeof(VersionCommand).Assembly
+            string? version = typeof(VersionCommand).Assembly
                 .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
                 .Split('+')[0];
             await context.Output.WriteLineAsync($"dmz {version}");

@@ -44,7 +44,7 @@ public sealed class RunLockTests
     public async Task An_abandoned_lease_reads_as_not_alive_and_the_next_run_takes_it(bool liveProcess, int hoursOld)
     {
         using var test = await TestWorkspace.CreateAsync();
-        var processId = liveProcess ? Environment.ProcessId : int.MaxValue;
+        int processId = liveProcess ? Environment.ProcessId : int.MaxValue;
         WriteLease(test.Workspace, "D04", new RunLock("run-1", processId, DateTimeOffset.UtcNow.AddHours(-hoursOld)));
 
         var holder = RunLocks.HolderOf(test.Workspace, "D04");
@@ -59,7 +59,7 @@ public sealed class RunLockTests
 
     private static void WriteLease(Workspace workspace, string deliverable, RunLock lease)
     {
-        var path = Path.Combine(workspace.StateRoot, "locks", deliverable + ".lock");
+        string path = Path.Combine(workspace.StateRoot, "locks", deliverable + ".lock");
         Directory.CreateDirectory(Path.GetDirectoryName(path)!);
         File.WriteAllBytes(path, JsonSerializer.SerializeToUtf8Bytes(lease, WorkspaceJsonContext.Default.RunLock));
     }

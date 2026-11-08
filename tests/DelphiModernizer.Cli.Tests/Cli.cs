@@ -16,7 +16,7 @@ internal static class Cli
         using var output = new StringWriter();
         using var error = new StringWriter();
         var context = new CliContext(output, error, new StringReader(input), name => environment?.GetValueOrDefault(name), currentDirectory);
-        var exitCode = await DmzApp.RunAsync(context, args);
+        int exitCode = await DmzApp.RunAsync(context, args);
 
         return (exitCode, output.ToString(), error.ToString());
     }

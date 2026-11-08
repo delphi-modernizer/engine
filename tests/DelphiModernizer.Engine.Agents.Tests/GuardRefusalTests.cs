@@ -88,7 +88,7 @@ public sealed class GuardRefusalTests
 
     private static string Result(bool isError, string content)
     {
-        var json = System.Text.Json.JsonSerializer.Serialize(content);
+        string json = System.Text.Json.JsonSerializer.Serialize(content);
 
         return $$$"""{"type":"user","message":{"content":[{"type":"tool_result","tool_use_id":"t1","is_error":{{{(isError ? "true" : "false")}}},"content":{{{json}}}}]}}""";
     }

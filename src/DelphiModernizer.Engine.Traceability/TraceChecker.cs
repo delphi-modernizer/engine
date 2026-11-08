@@ -14,18 +14,12 @@ namespace DelphiModernizer.Engine.Traceability;
 /// Rule logic is keyed by each rule's stable name; severities, kinds, columns and values come from the kit's
 /// trace-rules.json, so the kit can tune a rule without an engine release.
 /// </remarks>
-public sealed partial class TraceChecker
+public sealed partial class TraceChecker(KitSpec spec)
 {
-    private readonly KitSpec _spec;
-    private readonly IdPatterns _patterns;
-    private readonly IReadOnlyDictionary<string, TraceRule> _rules;
-
-    public TraceChecker(KitSpec spec)
-    {
-        _spec = spec;
-        _patterns = new IdPatterns(spec.Ids, spec.TraceRules);
-        _rules = spec.TraceRules.Rules.ToDictionary(r => r.Name, StringComparer.Ordinal);
-    }
+    private readonly KitSpec _spec = spec;
+    private readonly IdPatterns _patterns = new(spec.Ids, spec.TraceRules);
+    private readonly IReadOnlyDictionary<string, TraceRule> _rules =
+        spec.TraceRules.Rules.ToDictionary(r => r.Name, StringComparer.Ordinal);
 
     public TraceReport Check(string workspaceRoot, bool strict)
     {
@@ -49,7 +43,7 @@ public sealed partial class TraceChecker
 
     private List<MarkdownDocument> ReadDocuments(string workspaceRoot)
     {
-        var docs = Path.Combine(workspaceRoot, "docs");
+        string docs = Path.Combine(workspaceRoot, "docs");
 
         if (!Directory.Exists(docs))
         {
@@ -155,7 +149,7 @@ public sealed partial class TraceChecker
                     continue;
                 }
 
-                foreach (var problem in FrontMatterProblems(front, byFile.GetValueOrDefault(document.Path)))
+                foreach (string problem in FrontMatterProblems(front, byFile.GetValueOrDefault(document.Path)))
                 {
                     Report("invalid-front-matter", document.Path, 1, front.GetValueOrDefault("id"), problem);
                 }
@@ -174,8 +168,8 @@ public sealed partial class TraceChecker
         private IEnumerable<string> FrontMatterProblems(IReadOnlyDictionary<string, string> front, Deliverable? expected)
         {
             var deliverables = checker._spec.Deliverables;
-            var hasId = front.TryGetValue("id", out var id);
-            var hasPartOf = front.TryGetValue("part-of", out var partOf);
+            bool hasId = front.TryGetValue("id", out string? id);
+            bool hasPartOf = front.TryGetValue("part-of", out string? partOf);
 
             if (hasId == hasPartOf)
             {
@@ -216,7 +210,7 @@ public sealed partial class TraceChecker
 
                 if (definitions.Count > 1)
                 {
-                    var places = string.Join(", ", definitions.Select(d => $"{d.Path}:{d.Line}"));
+                    string places = string.Join(", ", definitions.Select(d => $"{d.Path}:{d.Line}"));
 
                     foreach (var definition in definitions)
                     {
@@ -248,12 +242,12 @@ public sealed partial class TraceChecker
                         .Ids(fragment.Text)
                         .Where(id => !_definitions.ContainsKey(id));
 
-                    foreach (var id in undefined)
+                    foreach (string id in undefined)
                     {
                         Report("dangling-reference", document.Path, fragment.Line, id, $"{id} is referenced but defined nowhere");
                     }
 
-                    foreach (var candidate in checker._patterns.MalformedIds(fragment.Text))
+                    foreach (string candidate in checker._patterns.MalformedIds(fragment.Text))
                     {
                         Report("malformed-id", document.Path, fragment.Line, candidate, $"'{candidate}' looks like an ID but does not match the kit's ID grammar");
                     }
@@ -268,16 +262,16 @@ public sealed partial class TraceChecker
 
         private void CheckEvidence(string path, EvidenceLink link)
         {
-            var legacy = Path.Combine(workspaceRoot, "legacy");
+            string legacy = Path.Combine(workspaceRoot, "legacy");
 
-            if (!WorkspacePaths.TryResolveInside(legacy, legacy, link.Path, out var file) || !File.Exists(file))
+            if (!WorkspacePaths.TryResolveInside(legacy, legacy, link.Path, out string file) || !File.Exists(file))
             {
                 Report("broken-evidence", path, link.Line, null, $"{link.Text}: no such file under legacy/");
 
                 return;
             }
 
-            var lines = LineCount(file);
+            int lines = LineCount(file);
 
             if (link.StartLine < 1 || link.EndLine < link.StartLine || link.EndLine > lines)
             {
@@ -289,7 +283,7 @@ public sealed partial class TraceChecker
         {
             foreach (var definition in _definitions.Values.Select(d => d[0]))
             {
-                var hasEvidence = definition.Section.Any(f => HasEvidence(f));
+                bool hasEvidence = definition.Section.Any(f => HasEvidence(f));
                 var references = ReferencesIn(definition).ToHashSet(StringComparer.Ordinal);
 
                 if (AppliesTo("missing-evidence", definition, out _) && !hasEvidence)
@@ -299,7 +293,7 @@ public sealed partial class TraceChecker
 
                 if (AppliesTo("untraced-requirement", definition, out var untraced))
                 {
-                    var traced = references.Any(r => untraced.TraceTo?.Any(k => r.StartsWith(k + "-", StringComparison.Ordinal)) == true);
+                    bool traced = references.Any(r => untraced.TraceTo?.Any(k => r.StartsWith(k + "-", StringComparison.Ordinal)) == true);
 
                     if (!traced && !(untraced.EvidenceSatisfies == true && hasEvidence))
                     {
@@ -333,14 +327,14 @@ public sealed partial class TraceChecker
                     Report("unmitigated-risk", definition.Path, definition.Line, definition.Id, $"{definition.Id} has no {risk.Column}");
                 }
 
-                foreach (var rule in (string[])["open-question", "open-conflict"])
+                foreach (string rule in (string[])["open-question", "open-conflict"])
                 {
                     if (!AppliesTo(rule, definition, out var open))
                     {
                         continue;
                     }
 
-                    var state = definition.Columns
+                    string state = definition.Columns
                         .GetValueOrDefault(open.Column ?? string.Empty, string.Empty)
                         .Trim();
 
@@ -366,7 +360,7 @@ public sealed partial class TraceChecker
                 return false;
             }
 
-            var prefix = checker._patterns.KindOf(definition.Id).Prefix;
+            string prefix = checker._patterns.KindOf(definition.Id).Prefix;
 
             return rule.Kinds?.Contains(prefix) == true;
         }
@@ -389,9 +383,9 @@ public sealed partial class TraceChecker
 
         private int LineCount(string file)
         {
-            if (!_lineCounts.TryGetValue(file, out var count))
+            if (!_lineCounts.TryGetValue(file, out int count))
             {
-                var bytes = File.ReadAllBytes(file);
+                byte[] bytes = File.ReadAllBytes(file);
                 count = bytes.Count(b => b == (byte)'\n') + (bytes.Length > 0 && bytes[^1] != (byte)'\n' ? 1 : 0);
                 _lineCounts[file] = count;
             }
@@ -406,7 +400,7 @@ public sealed partial class TraceChecker
                 return;
             }
 
-            var severity = strict && rule.StrictSeverity is not null ? rule.StrictSeverity : rule.Severity;
+            string severity = strict && rule.StrictSeverity is not null ? rule.StrictSeverity : rule.Severity;
             Issues.Add(new TraceIssue(rule.Id, rule.Name, severity, path, line, recordId, message));
         }
     }

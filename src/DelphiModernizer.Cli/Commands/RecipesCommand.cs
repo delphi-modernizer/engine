@@ -13,7 +13,7 @@ internal static class RecipesCommand
         command.SetAction(async (_, _) => {
             foreach (var recipe in KitBundle.Embedded.Spec.Recipes.Recipes)
             {
-                var argument = recipe.Argument.Required ? $"<{recipe.Argument.Name}>" : $"[{recipe.Argument.Name}]";
+                string argument = recipe.Argument.Required ? $"<{recipe.Argument.Name}>" : $"[{recipe.Argument.Name}]";
                 await context.Output.WriteLineAsync($"{recipe.Id,-24} {argument,-12} {recipe.Title} ({recipe.Agent})");
             }
 

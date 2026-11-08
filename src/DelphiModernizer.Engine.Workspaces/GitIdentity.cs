@@ -9,14 +9,14 @@ public sealed record GitIdentity(string Name, string? Email)
     /// <summary>The identity git has for <paramref name="directory"/>; null when user.name is unset or git is missing.</summary>
     public static async Task<GitIdentity?> ReadAsync(string directory, CancellationToken cancellationToken)
     {
-        var name = await Git.ConfigAsync(directory, "user.name", cancellationToken);
+        string? name = await Git.ConfigAsync(directory, "user.name", cancellationToken);
 
         if (string.IsNullOrWhiteSpace(name))
         {
             return null;
         }
 
-        var email = await Git.ConfigAsync(directory, "user.email", cancellationToken);
+        string? email = await Git.ConfigAsync(directory, "user.email", cancellationToken);
 
         return new GitIdentity(name, string.IsNullOrWhiteSpace(email) ? null : email);
     }

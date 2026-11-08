@@ -32,7 +32,7 @@ internal sealed class ScanProgressReporter
 
     public void FileDone()
     {
-        var done = Interlocked.Increment(ref _done);
+        int done = Interlocked.Increment(ref _done);
 
         if (done < _total && _time.GetElapsedTime(Volatile.Read(ref _reportedAt)) < Interval)
         {
@@ -41,7 +41,7 @@ internal sealed class ScanProgressReporter
 
         lock (_gate)
         {
-            var now = Volatile.Read(ref _done);
+            int now = Volatile.Read(ref _done);
 
             if (now == _reported || (now < _total && _time.GetElapsedTime(_reportedAt) < Interval))
             {
