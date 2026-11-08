@@ -73,7 +73,7 @@ internal sealed class DependencyGraph
             }
 
             var work = new Stack<(string Node, IEnumerator<string> Targets)>();
-            Enter(root);
+            work.Push(Enter(root));
 
             while (work.Count > 0)
             {
@@ -85,7 +85,7 @@ internal sealed class DependencyGraph
 
                     if (!index.TryGetValue(target, out int targetIndex))
                     {
-                        Enter(target);
+                        work.Push(Enter(target));
                     }
                     else if (onStack.Contains(target))
                     {
@@ -115,7 +115,7 @@ internal sealed class DependencyGraph
                 }
             }
 
-            void Enter(string node)
+            (string Node, IEnumerator<string> Targets) Enter(string node)
             {
                 index[node] = nextIndex;
                 lowLink[node] = nextIndex;
@@ -125,7 +125,8 @@ internal sealed class DependencyGraph
                 var targets = _edges[node]
                     .Order(StringComparer.OrdinalIgnoreCase)
                     .GetEnumerator();
-                work.Push((node, targets));
+
+                return (node, targets);
             }
         }
 
