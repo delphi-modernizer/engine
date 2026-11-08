@@ -113,6 +113,7 @@ internal static class RunCommand
             ToolCall c => $"{(c.FromSubagent ? "  │ " : string.Empty)}→ {c.Name} {c.Input}",
             ToolResult { IsError: true } r => $"  ✗ {r.Content}",
             ToolResult => "  ✓",
+            GuardRefused g => $"  ✗ refused {g.Tool} {g.Target}: {g.Reason}",
             RunCompleted r => $"{r.Outcome}: {r.Turns} turns, ${r.CostUsd:0.0000}{(r.PermissionDenials > 0 ? $", {r.PermissionDenials} permission denials" : string.Empty)}",
             Diagnostic d => $"[{d.Source}] {d.Text}",
             UnknownEvent u => $"[{u.Type}]",

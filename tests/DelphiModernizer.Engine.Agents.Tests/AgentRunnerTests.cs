@@ -77,6 +77,53 @@ public sealed class AgentRunnerTests : IDisposable
         Assert.Throws<ArgumentException>(() => runner.RunAsync(Request() with { Prompt = new string('x', AgentRunner.MaximumPromptLength + 1) }, CancellationToken.None));
     }
 
+    [Fact]
+    public async Task A_recorded_run_reads_back_as_the_events_it_streamed()
+    {
+        var (runner, _) = Runner(
+            """{"type":"system","subtype":"init","session_id":"s-1"}""",
+            "#stderr warming up",
+            """{"type":"assistant","message":{"content":[{"type":"tool_use","id":"t1","name":"Edit","input":{"file_path":"legacy/A.pas"}}]}}""",
+            """{"type":"user","message":{"content":[{"type":"tool_result","tool_use_id":"t1","is_error":true,"content":"PreToolUse:Edit hook error: [dmz guard pre-tool-use || exit 2]: legacy/ is read-only evidence; record findings in docs/ instead."}]}}""",
+            """{"type":"rate_limit_event"}""",
+            """{"type":"result","subtype":"success","is_error":false,"total_cost_usd":0.01,"num_turns":1}""");
+
+        var live = await CollectAsync(runner.RunAsync(Request(), CancellationToken.None));
+        var recorded = await CollectAsync(RunStore.ReadTranscriptAsync(_root, "run-1", CancellationToken.None));
+
+        Assert.Equal(live.Where(e => e is not Diagnostic { Source: "stderr" }), recorded);
+        Assert.Contains(recorded, e => e is GuardRefused { Target: "legacy/A.pas" });
+    }
+
+    [Fact]
+    public async Task A_recorded_run_without_a_result_ends_with_its_summarys_outcome()
+    {
+        var (runner, _) = Runner("""{"type":"system","subtype":"init","session_id":"s-1"}""", "#sleep 30000");
+        using var cancellation = new CancellationTokenSource();
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => {
+            await foreach (var _ in runner.RunAsync(Request(), cancellation.Token))
+            {
+                await cancellation.CancelAsync();
+            }
+        });
+
+        var recorded = await CollectAsync(RunStore.ReadTranscriptAsync(_root, "run-1", CancellationToken.None));
+
+        Assert.IsType<SessionStarted>(recorded[0]);
+        var completed = Assert.IsType<RunCompleted>(recorded[^1]);
+        Assert.Equal(("cancelled", true), (completed.Outcome, completed.IsError));
+    }
+
+    [Theory]
+    [InlineData("../run-1")]
+    [InlineData("..")]
+    [InlineData("")]
+    public void A_run_id_that_names_another_folder_is_refused(string runId)
+    {
+        Assert.Throws<ArgumentException>(() => RunStore.ReadTranscriptAsync(_root, runId, CancellationToken.None));
+    }
+
     public void Dispose()
     {
         Directory.Delete(_root, recursive: true);

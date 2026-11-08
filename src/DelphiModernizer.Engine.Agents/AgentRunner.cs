@@ -176,6 +176,7 @@ public sealed class AgentRunner(ClaudeExecutable executable)
         try
         {
             var standardError = ReadErrorsAsync(process, writer, cancellationToken);
+            var parser = new StreamJsonParser();
 
             while (await process.StandardOutput.ReadLineAsync(cancellationToken) is { } line)
             {
@@ -187,7 +188,7 @@ public sealed class AgentRunner(ClaudeExecutable executable)
                 await transcript.WriteLineAsync(line.AsMemory(), cancellationToken);
                 await transcript.FlushAsync(cancellationToken);
 
-                foreach (var item in StreamJsonParser.Parse(line))
+                foreach (var item in parser.Parse(line))
                 {
                     await writer.WriteAsync(item, cancellationToken);
                 }

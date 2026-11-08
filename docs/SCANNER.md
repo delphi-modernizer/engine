@@ -17,6 +17,9 @@ is evidence for a person or an agent to confirm in the code: the scanner is heur
 Folders named `.git`, `.svn`, `.hg`, `__history`, `__recovery`, `__astcache` and `backup`, files with `.~` extensions,
 and symbolic links are skipped.
 
+A caller can pass an `IProgress<ScanProgress>` to `LegacyScanner.Scan`: it hears files read of files found, at most
+every 100 ms, from 0 to the total ([design note](design/scan-progress.md)). `dmz scan` does not.
+
 ## Encodings
 
 A byte order mark decides. Without one, ASCII-only files are ASCII and everything else is decoded with the workspace's

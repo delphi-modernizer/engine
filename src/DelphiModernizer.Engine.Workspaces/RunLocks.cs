@@ -40,6 +40,17 @@ public static class RunLocks
         return Result.Success();
     }
 
+    /// <summary>The run holding a deliverable's lease, or null when the deliverable is free.</summary>
+    /// <remarks>
+    /// Only reads: an abandoned lease reads as not alive and stays until the next <see cref="Acquire"/> clears it.
+    /// </remarks>
+    public static LeaseHolder? HolderOf(Workspace workspace, string deliverable)
+    {
+        var holder = Holder(PathOf(workspace, deliverable));
+
+        return holder is null ? null : new LeaseHolder(holder.RunId, holder.StartedAt, !IsAbandoned(holder));
+    }
+
     public static void Release(Workspace workspace, string runId, IEnumerable<string> deliverables)
     {
         foreach (var deliverable in deliverables)
@@ -57,10 +68,15 @@ public static class RunLocks
     {
         var holder = Holder(path);
 
-        if (holder is not null && (DateTimeOffset.UtcNow - holder.StartedAt > _abandonedAfter || !IsAlive(holder.ProcessId)))
+        if (holder is not null && IsAbandoned(holder))
         {
             File.Delete(path);
         }
+    }
+
+    private static bool IsAbandoned(RunLock holder)
+    {
+        return DateTimeOffset.UtcNow - holder.StartedAt > _abandonedAfter || !IsAlive(holder.ProcessId);
     }
 
     private static bool IsAlive(int processId)

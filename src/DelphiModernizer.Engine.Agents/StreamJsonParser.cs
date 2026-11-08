@@ -4,16 +4,20 @@ using System.Text.Json;
 
 namespace DelphiModernizer.Engine.Agents;
 
-/// <summary>Parses one line of <c>claude -p --output-format stream-json</c> output into events.</summary>
+/// <summary>Parses the lines of one run's <c>claude -p --output-format stream-json</c> output into events.</summary>
 /// <remarks>
 /// The CLI's event set grows between versions, so unknown types become <see cref="UnknownEvent"/> rather than errors.
-/// Fields are read through <see cref="JsonDocument"/>, without reflection. See docs/design/agent-event-stream.md.
+/// One instance per run: it keeps each open tool call until its result, to name what a refusal refused.
 /// </remarks>
-internal static class StreamJsonParser
+internal sealed class StreamJsonParser
 {
     private const int _displayLength = 400;
 
-    public static IEnumerable<AgentEvent> Parse(string line)
+    private static readonly string[] _targetProperties = ["file_path", "notebook_path", "command", "path"];
+
+    private readonly Dictionary<string, (string Name, string? Target)> _openCalls = new(StringComparer.Ordinal);
+
+    public IEnumerable<AgentEvent> Parse(string line)
     {
         JsonDocument document;
 
@@ -40,7 +44,7 @@ internal static class StreamJsonParser
         }
     }
 
-    private static IEnumerable<AgentEvent> Assistant(JsonElement root)
+    private IEnumerable<AgentEvent> Assistant(JsonElement root)
     {
         var fromSubagent = root.TryGetProperty("parent_tool_use_id", out var parent) && parent.ValueKind == JsonValueKind.String;
 
@@ -52,14 +56,18 @@ internal static class StreamJsonParser
                     yield return new AssistantText(Text(block, "text") ?? string.Empty, fromSubagent);
                     break;
                 case "tool_use":
-                    var input = block.TryGetProperty("input", out var value) ? value.GetRawText() : "{}";
-                    yield return new ToolCall(Text(block, "id") ?? string.Empty, Text(block, "name") ?? string.Empty, Shorten(input), fromSubagent);
+                    var hasInput = block.TryGetProperty("input", out var value);
+                    var id = Text(block, "id") ?? string.Empty;
+                    var name = Text(block, "name") ?? string.Empty;
+                    _openCalls[id] = (name, hasInput ? TargetOf(value) : null);
+
+                    yield return new ToolCall(id, name, Shorten(hasInput ? value.GetRawText() : "{}"), fromSubagent);
                     break;
             }
         }
     }
 
-    private static IEnumerable<AgentEvent> ToolResults(JsonElement root)
+    private IEnumerable<AgentEvent> ToolResults(JsonElement root)
     {
         foreach (var block in ContentBlocks(root))
         {
@@ -68,11 +76,35 @@ internal static class StreamJsonParser
                 continue;
             }
 
+            var id = Text(block, "tool_use_id") ?? string.Empty;
             var isError = block.TryGetProperty("is_error", out var error) && error.ValueKind == JsonValueKind.True;
             var content = block.TryGetProperty("content", out var value) ? ContentText(value) : string.Empty;
+            var isOpen = _openCalls.Remove(id, out var call);
 
-            yield return new ToolResult(Text(block, "tool_use_id") ?? string.Empty, isError, Shorten(content));
+            if (isError && ToolRefusals.Recognise(content) is var (tool, reason))
+            {
+                yield return isOpen
+                    ? new GuardRefused(id, call.Name, call.Target, Shorten(reason))
+                    : new GuardRefused(id, tool, null, Shorten(reason));
+
+                continue;
+            }
+
+            yield return new ToolResult(id, isError, Shorten(content));
         }
+    }
+
+    private static string? TargetOf(JsonElement input)
+    {
+        foreach (var property in _targetProperties)
+        {
+            if (Text(input, property) is { } target)
+            {
+                return target;
+            }
+        }
+
+        return null;
     }
 
     private static RunCompleted Result(JsonElement root)

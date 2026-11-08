@@ -13,6 +13,11 @@ public sealed record ToolCall(string Id, string Name, string Input, bool FromSub
 
 public sealed record ToolResult(string ToolCallId, bool IsError, string Content) : AgentEvent;
 
+/// <summary>A tool call that the guard hook or a permission rule refused, in place of its failed tool result.</summary>
+/// <param name="Target">The file path or command the call named; null when the call named neither.</param>
+/// <param name="Reason">The guard's words, or Claude Code's sentence naming the denied permission.</param>
+public sealed record GuardRefused(string ToolCallId, string Tool, string? Target, string Reason) : AgentEvent;
+
 /// <param name="Outcome"><c>success</c>, the CLI's <c>error_*</c> subtype, <c>cancelled</c> or <c>failed</c> when the CLI ended without a result.</param>
 public sealed record RunCompleted(string Outcome, bool IsError, string? Message, decimal? CostUsd, long? DurationMs, int? Turns, int PermissionDenials) : AgentEvent;
 
