@@ -66,7 +66,7 @@ public sealed class AgentRunnerTests : IAsyncDisposable
         });
 
         Assert.Equal("cancelled", Summary().Outcome);
-        var script = Path.Combine(_root, "script.ndjson");
+        string script = Path.Combine(_root, "script.ndjson");
         await using var released = await OutwaitHoldersAsync(
             () => File.Open(script, FileMode.Open, FileAccess.ReadWrite, FileShare.None));
     }
