@@ -31,6 +31,10 @@ It adds no agent loop of its own.
 parser, so an earlier run yields the events its live run streamed from standard output; a transcript without a result
 ends with the summary's outcome. Standard error is not recorded.
 
+`RunLocks.HolderOf` reads a deliverable's lease: the run id, when it was taken, and whether it is alive. A lease is
+abandoned, and the next `Acquire` takes it, when the process that took it has exited or it is over twelve hours old;
+`HolderOf` applies the same rule and changes nothing.
+
 ## Safety layers
 
 | Layer | Stops |
