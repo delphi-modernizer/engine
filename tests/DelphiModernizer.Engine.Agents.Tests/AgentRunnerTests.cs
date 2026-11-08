@@ -66,7 +66,7 @@ public sealed class AgentRunnerTests : IDisposable
         });
 
         Assert.Equal("cancelled", Summary().Outcome);
-        using var released = File.Open(Path.Combine(_root, "script.ndjson"), FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+        await using var released = await OpenExclusivelyAsync(Path.Combine(_root, "script.ndjson"));
     }
 
     [Fact]
@@ -149,6 +149,28 @@ public sealed class AgentRunnerTests : IDisposable
         var path = Path.Combine(_root, ".modernizer", "runs", "run-1.json");
 
         return JsonSerializer.Deserialize(File.ReadAllBytes(path), AgentJsonContext.Default.RunSummary)!;
+    }
+
+    /// <summary>Opens a file no one else holds, allowing two seconds for a holder outside the run to let go.</summary>
+    /// <remarks>
+    /// A Windows runner's antivirus can hold a file for a moment after the process that read it exits. The fake CLI
+    /// sleeps 30 s, so a runner that returned without waiting for it still fails here.
+    /// </remarks>
+    private static async Task<FileStream> OpenExclusivelyAsync(string path)
+    {
+        var deadline = DateTimeOffset.UtcNow.AddSeconds(2);
+
+        while (true)
+        {
+            try
+            {
+                return File.Open(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+            }
+            catch (IOException) when (DateTimeOffset.UtcNow < deadline)
+            {
+                await Task.Delay(50, TestContext.Current.CancellationToken);
+            }
+        }
     }
 
     private static async Task<List<AgentEvent>> CollectAsync(IAsyncEnumerable<AgentEvent> events)
