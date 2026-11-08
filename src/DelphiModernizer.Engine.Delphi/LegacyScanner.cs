@@ -32,6 +32,15 @@ public static class LegacyScanner
 
     public static LegacyInventory Scan(string root, ScanOptions options, CancellationToken cancellationToken)
     {
+        return Scan(root, options, null, cancellationToken);
+    }
+
+    /// <param name="progress">
+    /// Told files done of the total: once before the first file, at most every 100 ms, and after the last. It is called
+    /// on the scan's worker threads, so a UI marshals it, as <see cref="Progress{T}"/> does.
+    /// </param>
+    public static LegacyInventory Scan(string root, ScanOptions options, IProgress<ScanProgress>? progress, CancellationToken cancellationToken)
+    {
         var paths = LegacyFiles.Enumerate(root);
         var decoder = new SourceDecoder(options.LegacyCodePage);
         var projectStems = paths
@@ -41,7 +50,12 @@ public static class LegacyScanner
         var results = new FileResult[paths.Count];
         var parallel = new ParallelOptions { CancellationToken = cancellationToken };
 
-        Parallel.For(0, paths.Count, parallel, i => results[i] = ReadFile(root, paths[i], decoder, options, projectStems));
+        var reporter = progress is null ? null : new ScanProgressReporter(progress, paths.Count, TimeProvider.System);
+
+        Parallel.For(0, paths.Count, parallel, i => {
+            results[i] = ReadFile(root, paths[i], decoder, options, projectStems);
+            reporter?.FileDone();
+        });
 
         return Aggregate(results);
     }
