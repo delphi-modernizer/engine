@@ -19,7 +19,8 @@ It adds no agent loop of its own.
    The folder holding `dmz` goes first on the run's PATH so the workspace's guard hook resolves.
 4. Every stdout line is appended verbatim to `.modernizer/runs/<run id>.jsonl` and parsed into typed events, which flow
    to the caller through a bounded channel ([design note](design/agent-event-stream.md)). Standard error becomes
-   diagnostic events.
+   diagnostic events. A failed tool result that the guard hook or a permission rule wrote becomes `GuardRefused`
+   rather than `ToolResult` ([design note](design/guard-refusals.md)).
 5. When the run ends — result, failure or cancellation — `.modernizer/runs/<run id>.json` records the outcome, cost
    and turns, and the leases are released. Cancelling kills the CLI's whole process tree and waits up to ten
    seconds for it to exit before the run ends.
