@@ -25,6 +25,12 @@ It adds no agent loop of its own.
    and turns, and the leases are released. Cancelling kills the CLI's whole process tree and waits up to ten
    seconds for it to exit before the run ends.
 
+## Reading runs back
+
+`RunStore.List` reads the run summaries. `RunStore.ReadTranscriptAsync` reads a run's `.jsonl` back through the same
+parser, so an earlier run yields the events its live run streamed from standard output; a transcript without a result
+ends with the summary's outcome. Standard error is not recorded.
+
 ## Safety layers
 
 | Layer | Stops |
