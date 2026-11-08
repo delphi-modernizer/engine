@@ -9,7 +9,7 @@ using Xunit;
 
 namespace DelphiModernizer.Engine.Agents.Tests;
 
-public sealed class AgentRunnerTests : IDisposable
+public sealed class AgentRunnerTests : IAsyncDisposable
 {
     private readonly string _root = Directory.CreateTempSubdirectory("dmz-run-").FullName;
 
@@ -66,7 +66,9 @@ public sealed class AgentRunnerTests : IDisposable
         });
 
         Assert.Equal("cancelled", Summary().Outcome);
-        await using var released = await OpenExclusivelyAsync(Path.Combine(_root, "script.ndjson"));
+        string script = Path.Combine(_root, "script.ndjson");
+        await using var released = await OutwaitHoldersAsync(
+            () => File.Open(script, FileMode.Open, FileAccess.ReadWrite, FileShare.None));
     }
 
     [Fact]
@@ -124,9 +126,13 @@ public sealed class AgentRunnerTests : IDisposable
         Assert.Throws<ArgumentException>(() => RunStore.ReadTranscriptAsync(_root, runId, CancellationToken.None));
     }
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
-        Directory.Delete(_root, recursive: true);
+        await OutwaitHoldersAsync(() => {
+            Directory.Delete(_root, recursive: true);
+
+            return _root;
+        });
     }
 
     private (AgentRunner Runner, string ArgumentsFile) Runner(params string[] script)
@@ -151,12 +157,13 @@ public sealed class AgentRunnerTests : IDisposable
         return JsonSerializer.Deserialize(File.ReadAllBytes(path), AgentJsonContext.Default.RunSummary)!;
     }
 
-    /// <summary>Opens a file no one else holds, allowing two seconds for a holder outside the run to let go.</summary>
+    /// <summary>Runs a file operation, allowing two seconds for a holder outside the run to let go.</summary>
     /// <remarks>
-    /// A Windows runner's antivirus can hold a file for a moment after the process that read it exits. The fake CLI
-    /// sleeps 30 s, so a runner that returned without waiting for it still fails here.
+    /// On a Windows runner something outside the test, such as an antivirus scan, can hold a file for a moment after
+    /// the CLI that read it exits. The fake CLI sleeps 30 s, so a runner that returned without waiting for it still
+    /// fails.
     /// </remarks>
-    private static async Task<FileStream> OpenExclusivelyAsync(string path)
+    private static async Task<T> OutwaitHoldersAsync<T>(Func<T> operation)
     {
         var deadline = DateTimeOffset.UtcNow.AddSeconds(2);
 
@@ -164,11 +171,11 @@ public sealed class AgentRunnerTests : IDisposable
         {
             try
             {
-                return File.Open(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+                return operation();
             }
             catch (IOException) when (DateTimeOffset.UtcNow < deadline)
             {
-                await Task.Delay(50, TestContext.Current.CancellationToken);
+                await Task.Delay(50, CancellationToken.None);
             }
         }
     }
