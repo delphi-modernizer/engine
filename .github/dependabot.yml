@@ -6,6 +6,10 @@ updates:
       interval: weekly
     commit-message:
       prefix: chore
+    ignore:
+      # The KH analyzers build against .NET 10's first compiler; a newer Roslyn stops them loading in older SDKs.
+      - dependency-name: Microsoft.CodeAnalysis.CSharp
+      - dependency-name: Microsoft.CodeAnalysis.CSharp.Workspaces
   - package-ecosystem: github-actions
     directory: /
     schedule:

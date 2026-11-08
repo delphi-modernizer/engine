@@ -13,14 +13,14 @@ concurrency:
 
 jobs:
   comments:
-    uses: delphi-modernizer/.github/.github/workflows/comment-lint.yml@461a93a3c2d4ef75f48d59414ef9cd80de029ecc
+    uses: delphi-modernizer/.github/.github/workflows/comment-lint.yml@e9debe4d0a96e6268ba2466a631732ced7c74591
     with:
-      standards-ref: 461a93a3c2d4ef75f48d59414ef9cd80de029ecc
+      standards-ref: e9debe4d0a96e6268ba2466a631732ced7c74591
 
   drift:
-    uses: delphi-modernizer/.github/.github/workflows/standards-drift.yml@461a93a3c2d4ef75f48d59414ef9cd80de029ecc
+    uses: delphi-modernizer/.github/.github/workflows/standards-drift.yml@e9debe4d0a96e6268ba2466a631732ced7c74591
     with:
-      standards-ref: 461a93a3c2d4ef75f48d59414ef9cd80de029ecc
+      standards-ref: e9debe4d0a96e6268ba2466a631732ced7c74591
       files: |
         .editorconfig=standards/csharp/.editorconfig
         tests/.editorconfig=standards/csharp/tests.editorconfig
@@ -28,10 +28,10 @@ jobs:
         docs/csharp-style.md=standards/csharp/csharp-style.md
 
   dependencies:
-    uses: delphi-modernizer/.github/.github/workflows/dependency-review.yml@461a93a3c2d4ef75f48d59414ef9cd80de029ecc
+    uses: delphi-modernizer/.github/.github/workflows/dependency-review.yml@e9debe4d0a96e6268ba2466a631732ced7c74591
 
   build:
-    uses: delphi-modernizer/.github/.github/workflows/dotnet-ci.yml@461a93a3c2d4ef75f48d59414ef9cd80de029ecc
+    uses: delphi-modernizer/.github/.github/workflows/dotnet-ci.yml@e9debe4d0a96e6268ba2466a631732ced7c74591
     with:
       solution: DelphiModernizer.Engine.slnx
       os: '["ubuntu-latest", "windows-latest"]'
