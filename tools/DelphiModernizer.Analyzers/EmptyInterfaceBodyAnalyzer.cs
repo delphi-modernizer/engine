@@ -15,7 +15,7 @@ public sealed class EmptyInterfaceBodyAnalyzer : DiagnosticAnalyzer
 {
     /// <inheritdoc/>
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
-        ImmutableArray.Create(StyleRules.EmptyInterfaceBody);
+        [StyleRules.EmptyInterfaceBody];
 
     /// <inheritdoc/>
     public override void Initialize(AnalysisContext context)

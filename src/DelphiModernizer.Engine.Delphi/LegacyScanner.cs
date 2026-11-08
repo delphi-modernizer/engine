@@ -66,7 +66,7 @@ public static class LegacyScanner
 
     private static FileResult ReadFile(string root, string path, SourceDecoder decoder, ScanOptions options, HashSet<string> projectStems)
     {
-        var extension = Path
+        string extension = Path
             .GetExtension(path)
             .ToLowerInvariant();
         var diagnostics = new List<ScanDiagnostic>();
@@ -86,7 +86,7 @@ public static class LegacyScanner
         }
 
         var result = new FileResult(path, extension, SHA256.HashData(bytes), diagnostics);
-        var isDelphiFile = _unitExtensions.Contains(extension) || _formExtensions.Contains(extension) || IsProjectFile(path, extension, projectStems);
+        bool isDelphiFile = _unitExtensions.Contains(extension) || _formExtensions.Contains(extension) || IsProjectFile(path, extension, projectStems);
 
         if (!isDelphiFile)
         {
@@ -145,7 +145,7 @@ public static class LegacyScanner
         var parsed = UnitParser.Parse(lexed.Tokens);
         var threadTypes = parsed.Types.Where(t => t.Ancestors.Any(a => a.Equals("TThread", StringComparison.OrdinalIgnoreCase)));
         var findings = CodeAnalyzer.Analyze(path, lexed.Tokens, threadTypes);
-        var codeLines = lexed.Tokens
+        int codeLines = lexed.Tokens
             .Where(t => t.Kind != TokenKind.Comment)
             .SelectMany(t => Enumerable.Range(t.Line, t.EndLine - t.Line + 1))
             .Distinct()
@@ -200,7 +200,7 @@ public static class LegacyScanner
         List<UnitInfo> units,
         List<FileResult> forms)
     {
-        var dataModules = units
+        int dataModules = units
             .SelectMany(u => u.Types)
             .Count(t => t.Ancestors.Any(a => a.Equals("TDataModule", StringComparison.OrdinalIgnoreCase)));
         var encodings = results
@@ -346,8 +346,8 @@ public static class LegacyScanner
     {
         var unit = result.Unit!;
         var parsed = unit.Parsed;
-        var name = NameOf(result);
-        var kind = parsed.Kind == "unknown" ? "include" : parsed.Kind;
+        string name = NameOf(result);
+        string kind = parsed.Kind == "unknown" ? "include" : parsed.Kind;
         var uses = parsed.Uses
             .Concat(parsed.Contains)
             .Select(u => u.Name);
@@ -390,7 +390,7 @@ public static class LegacyScanner
             .GroupBy(c => c.Component.ClassName, StringComparer.OrdinalIgnoreCase)
             .Select(g => {
                 var vendor = TechnologyCatalog.VendorOfClass(g.Key);
-                var category = TechnologyCatalog.CategoryOfClass(g.Key, vendor);
+                string category = TechnologyCatalog.CategoryOfClass(g.Key, vendor);
 
                 return new ComponentUsage(g.First().Component.ClassName, g.Count(), vendor?.Name, category);
             })
@@ -455,8 +455,8 @@ public static class LegacyScanner
             .Select(g =>
             {
                 var first = g.First().Property;
-                var raw = string.Join("; ", g.Select(p => $"{p.Property.Property}={p.Property.Value.Replace('\n', ';')}"));
-                var technology = TechnologyCatalog.DatabaseClasses.GetValueOrDefault(first.ClassName);
+                string raw = string.Join("; ", g.Select(p => $"{p.Property.Property}={p.Property.Value.Replace('\n', ';')}"));
+                string? technology = TechnologyCatalog.DatabaseClasses.GetValueOrDefault(first.ClassName);
 
                 return new DatabaseConnection(g.Key.Path, first.Line, first.Component, first.ClassName, technology, SecretRedactor.Redact(raw), SecretRedactor.ContainsSecret(raw));
             })
@@ -553,7 +553,7 @@ public static class LegacyScanner
     {
         var assembly = typeof(LegacyScanner).Assembly;
 
-        var version = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "unknown";
+        string version = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "unknown";
 
         return version.Split('+')[0];
     }

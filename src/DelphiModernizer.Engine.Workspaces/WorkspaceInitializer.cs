@@ -55,7 +55,7 @@ public static class WorkspaceInitializer
         progress?.Report(new InitProgress(InitStep.Kit, InitStepState.Done));
 
         progress?.Report(new InitProgress(InitStep.Legacy, InitStepState.Working));
-        var copied = CopyLegacy(request.LegacySource, Path.Combine(request.Root, "legacy"));
+        int copied = CopyLegacy(request.LegacySource, Path.Combine(request.Root, "legacy"));
         progress?.Report(new InitProgress(InitStep.Legacy, InitStepState.Done, $"{copied} files"));
 
         progress?.Report(new InitProgress(InitStep.Records, InitStepState.Working));
@@ -92,8 +92,8 @@ public static class WorkspaceInitializer
         progress?.Report(new InitProgress(InitStep.Git, InitStepState.Done));
         progress?.Report(new InitProgress(InitStep.FirstCommit, InitStepState.Working));
 
-        var committed = await Git.CommitAsync(request.Root, "chore: create the modernization workspace", cancellationToken, ".");
-        var head = committed ? await Git.HeadAsync(request.Root, cancellationToken) : null;
+        bool committed = await Git.CommitAsync(request.Root, "chore: create the modernization workspace", cancellationToken, ".");
+        string? head = committed ? await Git.HeadAsync(request.Root, cancellationToken) : null;
 
         progress?.Report(head is null
             ? new InitProgress(InitStep.FirstCommit, InitStepState.Failed, "git could not commit; set user.name and user.email.")
@@ -104,7 +104,7 @@ public static class WorkspaceInitializer
     {
         foreach (var file in KitBundle.Embedded.WorkspaceFiles)
         {
-            var path = Path.Combine(root, file.Path);
+            string path = Path.Combine(root, file.Path);
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
             File.WriteAllBytes(path, file.Content);
         }
@@ -112,11 +112,11 @@ public static class WorkspaceInitializer
 
     private static int CopyLegacy(string source, string destination)
     {
-        var copied = 0;
+        int copied = 0;
 
-        foreach (var relative in LegacyFiles.Enumerate(source))
+        foreach (string relative in LegacyFiles.Enumerate(source))
         {
-            var target = Path.Combine(destination, relative);
+            string target = Path.Combine(destination, relative);
             Directory.CreateDirectory(Path.GetDirectoryName(target)!);
             File.Copy(Path.Combine(source, relative), target);
             copied++;
@@ -127,7 +127,7 @@ public static class WorkspaceInitializer
 
     private static void WriteManifest(InitRequest request)
     {
-        var version = typeof(WorkspaceInitializer).Assembly
+        string? version = typeof(WorkspaceInitializer).Assembly
             .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
             .Split('+')[0];
         var manifest = new WorkspaceManifest(
@@ -183,7 +183,7 @@ public static class WorkspaceInitializer
             }
 
             var (question, why) = _contextQuestions[field];
-            var id = Registers.NextId(request.Root, Registers.OpenQuestions, "Q");
+            string id = Registers.NextId(request.Root, Registers.OpenQuestions, "Q");
             Registers.AppendRow(request.Root, Registers.OpenQuestions, id, question, why, request.DecidedBy, "Open", string.Empty);
             asked[field] = id;
         }
@@ -193,10 +193,10 @@ public static class WorkspaceInitializer
 
     private static void WriteCharter(InitRequest request, Dictionary<string, string> asked)
     {
-        var path = Path.Combine(request.Root, _charter);
-        var text = File.ReadAllText(path);
-        var stated = $"Stated by {request.DecidedBy} when the workspace was created.";
-        var target = request.TargetStack == "deferred"
+        string path = Path.Combine(request.Root, _charter);
+        string text = File.ReadAllText(path);
+        string stated = $"Stated by {request.DecidedBy} when the workspace was created.";
+        string target = request.TargetStack == "deferred"
             ? "**[Unknown]** The target stack is not chosen yet; see the open question in open-questions.md."
             : $"**[Confirmed]** The target stack is {TargetStacks.DisplayName(request.TargetStack)}, recorded in decision-log.md.";
 

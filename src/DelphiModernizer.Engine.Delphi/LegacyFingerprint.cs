@@ -13,7 +13,7 @@ public static class LegacyFingerprint
     {
         var files = new List<(string Path, byte[] Hash)>();
 
-        foreach (var relative in LegacyFiles.Enumerate(root))
+        foreach (string relative in LegacyFiles.Enumerate(root))
         {
             files.Add((relative, SHA256.HashData(File.ReadAllBytes(Path.Combine(root, relative)))));
         }

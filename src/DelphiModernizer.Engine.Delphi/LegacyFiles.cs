@@ -45,9 +45,9 @@ public static class LegacyFiles
 
     private static bool IsIgnored(string relative)
     {
-        var segments = relative.Split('/');
+        string[] segments = relative.Split('/');
 
-        var isBackup = Path
+        bool isBackup = Path
             .GetExtension(relative)
             .StartsWith(".~", StringComparison.Ordinal);
 

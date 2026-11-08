@@ -21,7 +21,7 @@ public sealed class EmptyInterfaceBodyCodeFixProvider : CodeFixProvider
 
     /// <inheritdoc/>
     public override ImmutableArray<string> FixableDiagnosticIds { get; } =
-        ImmutableArray.Create("KH0005");
+        ["KH0005"];
 
     /// <inheritdoc/>
     public override FixAllProvider GetFixAllProvider()

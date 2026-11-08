@@ -46,7 +46,7 @@ internal sealed class StreamJsonParser
 
     private IEnumerable<AgentEvent> Assistant(JsonElement root)
     {
-        var fromSubagent = root.TryGetProperty("parent_tool_use_id", out var parent) && parent.ValueKind == JsonValueKind.String;
+        bool fromSubagent = root.TryGetProperty("parent_tool_use_id", out var parent) && parent.ValueKind == JsonValueKind.String;
 
         foreach (var block in ContentBlocks(root))
         {
@@ -56,9 +56,9 @@ internal sealed class StreamJsonParser
                     yield return new AssistantText(Text(block, "text") ?? string.Empty, fromSubagent);
                     break;
                 case "tool_use":
-                    var hasInput = block.TryGetProperty("input", out var value);
-                    var id = Text(block, "id") ?? string.Empty;
-                    var name = Text(block, "name") ?? string.Empty;
+                    bool hasInput = block.TryGetProperty("input", out var value);
+                    string id = Text(block, "id") ?? string.Empty;
+                    string name = Text(block, "name") ?? string.Empty;
                     _openCalls[id] = (name, hasInput ? TargetOf(value) : null);
 
                     yield return new ToolCall(id, name, Shorten(hasInput ? value.GetRawText() : "{}"), fromSubagent);
@@ -76,10 +76,10 @@ internal sealed class StreamJsonParser
                 continue;
             }
 
-            var id = Text(block, "tool_use_id") ?? string.Empty;
-            var isError = block.TryGetProperty("is_error", out var error) && error.ValueKind == JsonValueKind.True;
-            var content = block.TryGetProperty("content", out var value) ? ContentText(value) : string.Empty;
-            var isOpen = _openCalls.Remove(id, out var call);
+            string id = Text(block, "tool_use_id") ?? string.Empty;
+            bool isError = block.TryGetProperty("is_error", out var error) && error.ValueKind == JsonValueKind.True;
+            string content = block.TryGetProperty("content", out var value) ? ContentText(value) : string.Empty;
+            bool isOpen = _openCalls.Remove(id, out var call);
 
             if (isError && ToolRefusals.Recognise(content) is var (tool, reason))
             {
@@ -96,7 +96,7 @@ internal sealed class StreamJsonParser
 
     private static string? TargetOf(JsonElement input)
     {
-        foreach (var property in _targetProperties)
+        foreach (string property in _targetProperties)
         {
             if (Text(input, property) is { } target)
             {
@@ -109,16 +109,16 @@ internal sealed class StreamJsonParser
 
     private static RunCompleted Result(JsonElement root)
     {
-        var isError = root.TryGetProperty("is_error", out var error) && error.ValueKind == JsonValueKind.True;
-        var denials = root.TryGetProperty("permission_denials", out var list) && list.ValueKind == JsonValueKind.Array ? list.GetArrayLength() : 0;
+        bool isError = root.TryGetProperty("is_error", out var error) && error.ValueKind == JsonValueKind.True;
+        int denials = root.TryGetProperty("permission_denials", out var list) && list.ValueKind == JsonValueKind.Array ? list.GetArrayLength() : 0;
 
         return new RunCompleted(
             Text(root, "subtype") ?? "unknown",
             isError,
             Text(root, "result"),
-            root.TryGetProperty("total_cost_usd", out var cost) && cost.TryGetDecimal(out var usd) ? usd : null,
-            root.TryGetProperty("duration_ms", out var duration) && duration.TryGetInt64(out var ms) ? ms : null,
-            root.TryGetProperty("num_turns", out var turns) && turns.TryGetInt32(out var count) ? count : null,
+            root.TryGetProperty("total_cost_usd", out var cost) && cost.TryGetDecimal(out decimal usd) ? usd : null,
+            root.TryGetProperty("duration_ms", out var duration) && duration.TryGetInt64(out long ms) ? ms : null,
+            root.TryGetProperty("num_turns", out var turns) && turns.TryGetInt32(out int count) ? count : null,
             denials);
     }
 

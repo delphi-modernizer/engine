@@ -49,7 +49,7 @@ public static class ApprovalService
             return Result.Failure<ApprovalEntry>(WorkspaceErrors.UnknownGate(gateId));
         }
 
-        var hash = new GateEvaluator(workspace).ContentHashOf(gate);
+        string hash = new GateEvaluator(workspace).ContentHashOf(gate);
 
         return await RecordAsync(workspace, gate, "revoke", by, note, hash, commit, cancellationToken);
     }
@@ -88,7 +88,7 @@ public static class ApprovalService
         bool commit,
         CancellationToken cancellationToken)
     {
-        var person = by ?? (await GitIdentity.ReadAsync(workspace.Root, cancellationToken))?.ToString();
+        string? person = by ?? (await GitIdentity.ReadAsync(workspace.Root, cancellationToken))?.ToString();
 
         if (string.IsNullOrWhiteSpace(person))
         {

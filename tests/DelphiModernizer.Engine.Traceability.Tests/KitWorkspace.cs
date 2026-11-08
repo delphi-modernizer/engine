@@ -13,7 +13,7 @@ internal sealed class KitWorkspace : IDisposable
 
         foreach (var file in KitBundle.Embedded.WorkspaceFiles)
         {
-            var path = System.IO.Path.Combine(Root, file.Path);
+            string path = System.IO.Path.Combine(Root, file.Path);
             Directory.CreateDirectory(System.IO.Path.GetDirectoryName(path)!);
             File.WriteAllBytes(path, file.Content);
         }
@@ -41,8 +41,8 @@ internal sealed class KitWorkspace : IDisposable
 
     public KitWorkspace Replace(string docsPath, string oldText, string newText)
     {
-        var path = System.IO.Path.Combine(Root, "docs", docsPath);
-        var text = File
+        string path = System.IO.Path.Combine(Root, "docs", docsPath);
+        string text = File
             .ReadAllText(path)
             .Replace(oldText, newText, StringComparison.Ordinal);
         File.WriteAllText(path, text);

@@ -22,7 +22,7 @@ internal sealed class TestWorkspace : IDisposable
 
     public static async Task<TestWorkspace> CreateAsync(string stack = "deferred")
     {
-        var parent = Directory.CreateTempSubdirectory("dmz-ws-").FullName;
+        string parent = Directory.CreateTempSubdirectory("dmz-ws-").FullName;
         var request = new InitRequest(
             Path.Combine(parent, "ws"),
             "Acme ERP",
@@ -50,7 +50,7 @@ internal sealed class TestWorkspace : IDisposable
     /// <remarks>Git writes its objects read-only, and Windows refuses to delete a read-only file.</remarks>
     public void Dispose()
     {
-        foreach (var file in Directory.EnumerateFiles(_parent, "*", SearchOption.AllDirectories))
+        foreach (string file in Directory.EnumerateFiles(_parent, "*", SearchOption.AllDirectories))
         {
             File.SetAttributes(file, FileAttributes.Normal);
         }

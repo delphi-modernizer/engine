@@ -80,7 +80,7 @@ internal sealed class CodeAnalyzer
 
     private void Run()
     {
-        for (var i = 0; i < _tokens.Count; i++)
+        for (int i = 0; i < _tokens.Count; i++)
         {
             var token = _tokens[i];
 
@@ -101,13 +101,13 @@ internal sealed class CodeAnalyzer
 
     private void VisitDirective(Token directive)
     {
-        var body = directive.Text
+        string body = directive.Text
             .TrimStart('{', '(', '*', '$')
             .TrimEnd('}', ')', '*')
             .Trim();
-        var upper = body.ToUpperInvariant();
+        string upper = body.ToUpperInvariant();
 
-        var kind = upper switch {
+        string? kind = upper switch {
             "Q-" or "Q+" => "overflow-checks",
             "R-" or "R+" => "range-checks",
             "I-" or "I+" => "io-checks",
@@ -132,7 +132,7 @@ internal sealed class CodeAnalyzer
         var next = Peek(i + 1);
         var previous = Peek(i - 1);
 
-        if (_keywordMarkers.TryGetValue(token.Text, out var keywordMarker) && !previous.IsSymbol("."))
+        if (_keywordMarkers.TryGetValue(token.Text, out string? keywordMarker) && !previous.IsSymbol("."))
         {
             Mark(keywordMarker, token.Line, token.Text);
         }
@@ -146,7 +146,9 @@ internal sealed class CodeAnalyzer
             Mark("short-string", token.Line, "string[N]");
         }
 
-        if (_callMarkers.TryGetValue(token.Text, out var callMarker) && next.IsSymbol("(") && !previous.IsSymbol("."))
+        if (_callMarkers.TryGetValue(token.Text, out string? callMarker)
+            && next.IsSymbol("(")
+            && !previous.IsSymbol("."))
         {
             Mark(callMarker, token.Line, token.Text);
         }
@@ -161,7 +163,7 @@ internal sealed class CodeAnalyzer
             _comObjects.Add(new ComObjectUse(_path, token.Line, Peek(i + 2).Text));
         }
 
-        var assignsLiteral = (next.IsSymbol(":=") || next.IsSymbol("=")) && Peek(i + 2).Kind == TokenKind.String && Peek(i + 2).Text.Length > 0;
+        bool assignsLiteral = (next.IsSymbol(":=") || next.IsSymbol("=")) && Peek(i + 2).Kind == TokenKind.String && Peek(i + 2).Text.Length > 0;
 
         if (assignsLiteral && SecretRedactor.IsSecretName(token.Text))
         {
@@ -179,14 +181,14 @@ internal sealed class CodeAnalyzer
         }
 
         var (text, concatenated, last) = ReadConcatenation(i);
-        var isFormat = Peek(i - 1).IsSymbol("(") && Peek(i - 2).Is("Format");
+        bool isFormat = Peek(i - 1).IsSymbol("(") && Peek(i - 2).Is("Format");
 
         if (!SqlClassifier.LooksLikeSql(text))
         {
             return;
         }
 
-        var builtByConcatenation = concatenated || (isFormat && text.Contains("%s", StringComparison.OrdinalIgnoreCase));
+        bool builtByConcatenation = concatenated || (isFormat && text.Contains("%s", StringComparison.OrdinalIgnoreCase));
         _sql.Add(new SqlStatement(_path, token.Line, "code", null, SqlClassifier.Kind(text), SqlClassifier.Normalize(text), builtByConcatenation));
 
         if (builtByConcatenation)
@@ -194,7 +196,7 @@ internal sealed class CodeAnalyzer
             Mark("sql-concatenation", token.Line, SqlClassifier.Normalize(text));
         }
 
-        for (var consumed = i; consumed <= last; consumed++)
+        for (int consumed = i; consumed <= last; consumed++)
         {
             _consumedStrings.Add(consumed);
         }
@@ -204,8 +206,8 @@ internal sealed class CodeAnalyzer
     private (string Text, bool Concatenated, int Last) ReadConcatenation(int start)
     {
         var text = new StringBuilder(_tokens[start].Text);
-        var concatenated = false;
-        var i = start;
+        bool concatenated = false;
+        int i = start;
 
         while (Peek(i + 1).IsSymbol("+"))
         {
@@ -234,8 +236,8 @@ internal sealed class CodeAnalyzer
 
     private int SkipOperand(int start)
     {
-        var i = start;
-        var parentheses = 0;
+        int i = start;
+        int parentheses = 0;
 
         while (i + 1 < _tokens.Count)
         {
@@ -262,7 +264,7 @@ internal sealed class CodeAnalyzer
 
     private string RoutineNameBefore(int externalIndex)
     {
-        for (var i = externalIndex - 1; i >= 0; i--)
+        for (int i = externalIndex - 1; i >= 0; i--)
         {
             if (_tokens[i].Is("procedure") || _tokens[i].Is("function"))
             {

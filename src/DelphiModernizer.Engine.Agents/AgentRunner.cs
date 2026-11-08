@@ -38,7 +38,7 @@ public sealed class AgentRunner(ClaudeExecutable executable)
 
     private async IAsyncEnumerable<AgentEvent> RunCoreAsync(AgentRunRequest request, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var runs = Path.Combine(request.WorkspaceRoot, ".modernizer", "runs");
+        string runs = Path.Combine(request.WorkspaceRoot, ".modernizer", "runs");
         Directory.CreateDirectory(runs);
         var startedAt = DateTimeOffset.UtcNow;
         var channel = Channel.CreateBounded<AgentEvent>(new BoundedChannelOptions(_channelCapacity) {
@@ -118,7 +118,7 @@ public sealed class AgentRunner(ClaudeExecutable executable)
             CreateNoWindow = true,
         };
 
-        foreach (var argument in Arguments(request))
+        foreach (string argument in Arguments(request))
         {
             startInfo.ArgumentList.Add(argument);
         }
@@ -137,7 +137,7 @@ public sealed class AgentRunner(ClaudeExecutable executable)
     /// <remarks>Each value is its own argument through ArgumentList, never a shell string.</remarks>
     private IEnumerable<string> Arguments(AgentRunRequest request)
     {
-        foreach (var argument in executable.LeadingArguments)
+        foreach (string argument in executable.LeadingArguments)
         {
             yield return argument;
         }

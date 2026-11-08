@@ -14,7 +14,7 @@ public sealed class ChainedCallsAnalyzer : DiagnosticAnalyzer
 {
     /// <inheritdoc/>
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
-        ImmutableArray.Create(StyleRules.ChainedCallsOnePerLine);
+        [StyleRules.ChainedCallsOnePerLine];
 
     /// <inheritdoc/>
     public override void Initialize(AnalysisContext context)

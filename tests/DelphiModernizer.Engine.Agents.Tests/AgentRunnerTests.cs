@@ -23,7 +23,7 @@ public sealed class AgentRunnerTests : IAsyncDisposable
             """{"type":"result","subtype":"success","is_error":false,"total_cost_usd":0.01,"num_turns":1}""");
 
         var events = await CollectAsync(runner.RunAsync(Request(), CancellationToken.None));
-        var arguments = await File.ReadAllLinesAsync(argumentsFile, TestContext.Current.CancellationToken);
+        string[] arguments = await File.ReadAllLinesAsync(argumentsFile, TestContext.Current.CancellationToken);
 
         var fromStandardOutput = events
             .Where(e => e is not Diagnostic)
@@ -137,10 +137,10 @@ public sealed class AgentRunnerTests : IAsyncDisposable
 
     private (AgentRunner Runner, string ArgumentsFile) Runner(params string[] script)
     {
-        var scriptFile = Path.Combine(_root, "script.ndjson");
-        var argumentsFile = Path.Combine(_root, "arguments.txt");
+        string scriptFile = Path.Combine(_root, "script.ndjson");
+        string argumentsFile = Path.Combine(_root, "arguments.txt");
         File.WriteAllLines(scriptFile, script);
-        var fake = Path.Combine(AppContext.BaseDirectory, "DelphiModernizer.Engine.Agents.FakeClaude.dll");
+        string fake = Path.Combine(AppContext.BaseDirectory, "DelphiModernizer.Engine.Agents.FakeClaude.dll");
 
         return (new AgentRunner(new ClaudeExecutable("dotnet", [fake, scriptFile, argumentsFile])), argumentsFile);
     }
@@ -152,7 +152,7 @@ public sealed class AgentRunnerTests : IAsyncDisposable
 
     private RunSummary Summary()
     {
-        var path = Path.Combine(_root, ".modernizer", "runs", "run-1.json");
+        string path = Path.Combine(_root, ".modernizer", "runs", "run-1.json");
 
         return JsonSerializer.Deserialize(File.ReadAllBytes(path), AgentJsonContext.Default.RunSummary)!;
     }

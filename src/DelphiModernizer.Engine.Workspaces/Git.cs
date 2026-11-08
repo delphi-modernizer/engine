@@ -67,7 +67,7 @@ internal static class Git
     /// </remarks>
     public static async Task<IReadOnlyList<string>?> ChangedSinceAsync(string root, string commit, IReadOnlyList<string> paths, CancellationToken cancellationToken)
     {
-        var isObjectId = commit.Length is >= 7 and <= 64 && !commit
+        bool isObjectId = commit.Length is >= 7 and <= 64 && !commit
             .AsSpan()
             .ContainsAnyExcept(_lowerHexDigits);
 

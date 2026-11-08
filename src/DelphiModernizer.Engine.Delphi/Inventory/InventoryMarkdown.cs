@@ -71,7 +71,7 @@ public static class InventoryMarkdown
         Line(text, header);
         Line(text, string.Concat(Enumerable.Repeat("| --- ", header.Count(c => c == '|') - 1)) + "|");
 
-        foreach (var line in lines)
+        foreach (string line in lines)
         {
             Line(text, line);
         }

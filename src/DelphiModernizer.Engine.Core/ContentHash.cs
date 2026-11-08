@@ -28,12 +28,12 @@ public static class ContentHash
             .Distinct(StringComparer.Ordinal)
             .Order(StringComparer.Ordinal);
 
-        foreach (var relative in ordered)
+        foreach (string relative in ordered)
         {
             hash.AppendData(Encoding.UTF8.GetBytes(relative));
             hash.AppendData([0]);
 
-            var full = Path.Combine(root, relative);
+            string full = Path.Combine(root, relative);
 
             if (File.Exists(full))
             {
@@ -66,7 +66,7 @@ public static class ContentHash
 
         var result = new List<byte>(content.Length);
 
-        for (var i = 0; i < content.Length; i++)
+        for (int i = 0; i < content.Length; i++)
         {
             if (content[i] == (byte)'\r' && i + 1 < content.Length && content[i + 1] == (byte)'\n')
             {

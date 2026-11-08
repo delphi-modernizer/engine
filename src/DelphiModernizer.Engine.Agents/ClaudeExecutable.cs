@@ -21,7 +21,7 @@ public sealed record ClaudeExecutable(string FileName, IReadOnlyList<string> Lea
     /// </remarks>
     public static Result<ClaudeExecutable> Locate(string? configuredPath)
     {
-        var candidate = configuredPath ?? FindOnPath();
+        string? candidate = configuredPath ?? FindOnPath();
 
         if (candidate is null)
         {
@@ -44,7 +44,7 @@ public sealed record ClaudeExecutable(string FileName, IReadOnlyList<string> Lea
     public async Task<Result<Version>> VersionAsync(CancellationToken cancellationToken)
     {
         var result = await CommandRunner.RunAsync(FileName, [.. LeadingArguments, "--version"], Environment.CurrentDirectory, cancellationToken);
-        var token = result.StandardOutput
+        string? token = result.StandardOutput
             .Split(' ', StringSplitOptions.RemoveEmptyEntries)
             .FirstOrDefault();
 
@@ -60,8 +60,8 @@ public sealed record ClaudeExecutable(string FileName, IReadOnlyList<string> Lea
 
     private static string? FindOnPath()
     {
-        var name = OperatingSystem.IsWindows() ? "claude.exe" : "claude";
-        var directories = (Environment.GetEnvironmentVariable("PATH") ?? string.Empty)
+        string name = OperatingSystem.IsWindows() ? "claude.exe" : "claude";
+        string[] directories = (Environment.GetEnvironmentVariable("PATH") ?? string.Empty)
             .Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries);
 
         return directories

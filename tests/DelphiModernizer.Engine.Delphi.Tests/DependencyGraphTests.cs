@@ -32,12 +32,12 @@ public sealed class DependencyGraphTests
         var graph = new DependencyGraph();
         const int length = 200_000;
 
-        for (var i = 0; i < length; i++)
+        for (int i = 0; i < length; i++)
         {
             graph.AddNode($"U{i}");
         }
 
-        for (var i = 0; i < length - 1; i++)
+        for (int i = 0; i < length - 1; i++)
         {
             graph.AddUses($"U{i}", [$"U{i + 1}"]);
         }

@@ -17,8 +17,8 @@ public sealed class ScannerGoldenTests
     public void The_inventory_matches_the_reviewed_copy(string fixture)
     {
         var inventory = LegacyScanner.Scan(Fixtures.Delphi(fixture), new ScanOptions(LegacyCodePage: 1258), TestContext.Current.CancellationToken);
-        var actual = JsonSerializer.Serialize(inventory with { ScannerVersion = "test" }, InventoryJsonContext.Default.LegacyInventory) + "\n";
-        var expectedPath = Fixtures.Expected(fixture + ".inventory.json");
+        string actual = JsonSerializer.Serialize(inventory with { ScannerVersion = "test" }, InventoryJsonContext.Default.LegacyInventory) + "\n";
+        string expectedPath = Fixtures.Expected(fixture + ".inventory.json");
 
         if (Environment.GetEnvironmentVariable("DMZ_UPDATE_GOLDEN") == "1")
         {

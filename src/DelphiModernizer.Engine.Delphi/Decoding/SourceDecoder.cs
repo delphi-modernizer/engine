@@ -9,23 +9,18 @@ namespace DelphiModernizer.Engine.Delphi.Decoding;
 /// mark are never guessed to be UTF-8; the result flags them so a person can choose the code page. See
 /// docs/design/encodings.md.
 /// </remarks>
-public sealed class SourceDecoder
+public sealed class SourceDecoder(int legacyCodePage)
 {
     private static readonly UTF8Encoding _strictUtf8 = new(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
     private static readonly byte[] _utf8Mark = [0xEF, 0xBB, 0xBF];
     private static readonly byte[] _utf16LittleEndianMark = [0xFF, 0xFE];
     private static readonly byte[] _utf16BigEndianMark = [0xFE, 0xFF];
 
-    private readonly Encoding _legacyEncoding;
+    private readonly Encoding _legacyEncoding = Encoding.GetEncoding(legacyCodePage);
 
     static SourceDecoder()
     {
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-    }
-
-    public SourceDecoder(int legacyCodePage)
-    {
-        _legacyEncoding = Encoding.GetEncoding(legacyCodePage);
     }
 
     public DecodedSource Decode(ReadOnlySpan<byte> bytes)

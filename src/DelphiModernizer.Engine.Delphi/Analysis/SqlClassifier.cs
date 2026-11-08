@@ -40,9 +40,9 @@ internal static partial class SqlClassifier
     public static string Normalize(string text)
     {
         var builder = new StringBuilder(Math.Min(text.Length, _maximumLength));
-        var pendingSpace = false;
+        bool pendingSpace = false;
 
-        foreach (var c in text)
+        foreach (char c in text)
         {
             if (char.IsWhiteSpace(c))
             {
@@ -60,7 +60,7 @@ internal static partial class SqlClassifier
             builder.Append(c);
         }
 
-        var redacted = SecretRedactor.Redact(builder.ToString());
+        string redacted = SecretRedactor.Redact(builder.ToString());
 
         return redacted.Length <= _maximumLength ? redacted : redacted[.._maximumLength] + "…";
     }

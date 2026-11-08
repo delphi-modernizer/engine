@@ -10,7 +10,7 @@ public sealed class GitIdentityTests
     [Fact]
     public async Task The_identity_is_what_git_resolves_for_the_folder()
     {
-        var folder = Directory.CreateTempSubdirectory("dmz-identity-").FullName;
+        string folder = Directory.CreateTempSubdirectory("dmz-identity-").FullName;
         var cancellationToken = TestContext.Current.CancellationToken;
         await CommandRunner.RunAsync("git", ["init", "--quiet"], folder, cancellationToken);
         await CommandRunner.RunAsync("git", ["config", "user.name", "Test Person"], folder, cancellationToken);

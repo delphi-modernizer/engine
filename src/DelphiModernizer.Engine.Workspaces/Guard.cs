@@ -21,8 +21,8 @@ public static partial class Guard
     {
         using var document = JsonDocument.Parse(hookInput);
         var root = document.RootElement;
-        var tool = root.TryGetProperty("tool_name", out var name) ? name.GetString() ?? string.Empty : string.Empty;
-        var cwd = root.TryGetProperty("cwd", out var directory) ? directory.GetString() ?? Environment.CurrentDirectory : Environment.CurrentDirectory;
+        string tool = root.TryGetProperty("tool_name", out var name) ? name.GetString() ?? string.Empty : string.Empty;
+        string cwd = root.TryGetProperty("cwd", out var directory) ? directory.GetString() ?? Environment.CurrentDirectory : Environment.CurrentDirectory;
         var input = root.TryGetProperty("tool_input", out var toolInput) ? toolInput : default;
         var workspace = Workspace.Find(cwd);
 
@@ -46,12 +46,12 @@ public static partial class Guard
             return GuardDecision.Deny("The edit names no file.");
         }
 
-        if (!WorkspacePaths.TryResolveInside(workspace.Root, cwd, path, out var full))
+        if (!WorkspacePaths.TryResolveInside(workspace.Root, cwd, path, out string full))
         {
             return GuardDecision.Deny($"{path} is outside the workspace.");
         }
 
-        var relative = WorkspacePaths.ToRelative(workspace.Root, full);
+        string relative = WorkspacePaths.ToRelative(workspace.Root, full);
 
         if (WorkspacePaths.IsUnder(relative, "legacy"))
         {

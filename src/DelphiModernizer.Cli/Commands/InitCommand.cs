@@ -38,7 +38,7 @@ internal static class InitCommand
                 return CommonOptions.Fail(context, new Error("Init.Agent", "Creating a workspace records decisions; a person runs dmz init."));
             }
 
-            var person = parseResult.GetValue(by) ?? await Identity.OfCurrentUserAsync(context, cancellationToken);
+            string? person = parseResult.GetValue(by) ?? await Identity.OfCurrentUserAsync(context, cancellationToken);
 
             if (person is null)
             {

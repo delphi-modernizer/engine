@@ -20,7 +20,7 @@ internal static class ApproveCommand
         };
         var by = new Option<string?>("--by") { Description = "Who decides; defaults to git user.name and user.email." };
         var noCommit = new Option<bool>("--no-commit") { Description = "Record the decision without committing approvals.json." };
-        var description = verb == "approve"
+        string description = verb == "approve"
             ? "Approve a gate after reviewing its deliverables. People only; refused inside an agent session."
             : "Withdraw a gate's approval.";
         var command = new Command(verb, description) { gate, workspace, note, by, noCommit };
@@ -38,10 +38,10 @@ internal static class ApproveCommand
                 return CommonOptions.Fail(context, opened.Error);
             }
 
-            var gateId = parseResult
+            string gateId = parseResult
                 .GetRequiredValue(gate)
                 .ToUpperInvariant();
-            var commit = !parseResult.GetValue(noCommit);
+            bool commit = !parseResult.GetValue(noCommit);
             var result = verb == "approve"
                 ? await ApprovalService.ApproveAsync(opened.Value, gateId, parseResult.GetValue(by), parseResult.GetValue(note) ?? string.Empty, commit, cancellationToken)
                 : await ApprovalService.RevokeAsync(opened.Value, gateId, parseResult.GetValue(by), parseResult.GetValue(note) ?? string.Empty, commit, cancellationToken);
@@ -51,7 +51,7 @@ internal static class ApproveCommand
                 return CommonOptions.Fail(context, result.Error);
             }
 
-            var name = KitBundle.Embedded.Spec.Gates.Gates
+            string name = KitBundle.Embedded.Spec.Gates.Gates
                 .Single(g => g.Id == gateId)
                 .Name;
             await context.Output.WriteLineAsync($"The {name} sign-off was {(verb == "approve" ? "approved" : "revoked")} by {result.Value.By} ({result.Value.ContentHash}).");

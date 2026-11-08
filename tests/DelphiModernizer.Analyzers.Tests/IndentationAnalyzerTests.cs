@@ -25,7 +25,7 @@ public sealed class IndentationAnalyzerTests
             }
             """;
 
-        var lines = await Harness.LinesAsync(CreateAnalyzer(), source);
+        int[] lines = await Harness.LinesAsync(CreateAnalyzer(), source);
 
         Assert.Equal([6, 7], lines);
     }

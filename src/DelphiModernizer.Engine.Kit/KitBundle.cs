@@ -78,7 +78,7 @@ public sealed class KitBundle
             .GetManifestResourceNames()
             .Where(n => n.StartsWith(_resourcePrefix, StringComparison.Ordinal));
 
-        foreach (var name in names)
+        foreach (string name in names)
         {
             using var stream = assembly.GetManifestResourceStream(name)!;
             using var buffer = new MemoryStream();
@@ -99,7 +99,7 @@ public sealed class KitBundle
 
     private byte[] Read(string path)
     {
-        return _files.TryGetValue(path, out var content)
+        return _files.TryGetValue(path, out byte[]? content)
             ? content
             : throw new InvalidDataException($"The kit has no {path}.");
     }

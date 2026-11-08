@@ -17,9 +17,9 @@ public static class RunLocks
     {
         var taken = new List<string>();
 
-        foreach (var deliverable in deliverables)
+        foreach (string deliverable in deliverables)
         {
-            var path = PathOf(workspace, deliverable);
+            string path = PathOf(workspace, deliverable);
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
             ClearIfAbandoned(path);
 
@@ -53,9 +53,9 @@ public static class RunLocks
 
     public static void Release(Workspace workspace, string runId, IEnumerable<string> deliverables)
     {
-        foreach (var deliverable in deliverables)
+        foreach (string deliverable in deliverables)
         {
-            var path = PathOf(workspace, deliverable);
+            string path = PathOf(workspace, deliverable);
 
             if (Holder(path)?.RunId == runId)
             {
