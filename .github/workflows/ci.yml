@@ -13,14 +13,14 @@ concurrency:
 
 jobs:
   comments:
-    uses: delphi-modernizer/.github/.github/workflows/comment-lint.yml@e9debe4d0a96e6268ba2466a631732ced7c74591
+    uses: delphi-modernizer/.github/.github/workflows/comment-lint.yml@78374692c4c7d78c93f578e43b262ca7818bdfb0
     with:
-      standards-ref: e9debe4d0a96e6268ba2466a631732ced7c74591
+      standards-ref: 78374692c4c7d78c93f578e43b262ca7818bdfb0
 
   drift:
-    uses: delphi-modernizer/.github/.github/workflows/standards-drift.yml@e9debe4d0a96e6268ba2466a631732ced7c74591
+    uses: delphi-modernizer/.github/.github/workflows/standards-drift.yml@78374692c4c7d78c93f578e43b262ca7818bdfb0
     with:
-      standards-ref: e9debe4d0a96e6268ba2466a631732ced7c74591
+      standards-ref: 78374692c4c7d78c93f578e43b262ca7818bdfb0
       files: |
         .editorconfig=standards/csharp/.editorconfig
         tests/.editorconfig=standards/csharp/tests.editorconfig
@@ -28,14 +28,17 @@ jobs:
         docs/csharp-style.md=standards/csharp/csharp-style.md
 
   dependencies:
-    uses: delphi-modernizer/.github/.github/workflows/dependency-review.yml@e9debe4d0a96e6268ba2466a631732ced7c74591
+    uses: delphi-modernizer/.github/.github/workflows/dependency-review.yml@78374692c4c7d78c93f578e43b262ca7818bdfb0
 
   build:
-    uses: delphi-modernizer/.github/.github/workflows/dotnet-ci.yml@e9debe4d0a96e6268ba2466a631732ced7c74591
+    uses: delphi-modernizer/.github/.github/workflows/dotnet-ci.yml@78374692c4c7d78c93f578e43b262ca7818bdfb0
     with:
       solution: DelphiModernizer.Engine.slnx
       os: '["ubuntu-latest", "windows-latest"]'
       submodules: 'true'
+      sonar-organization: delphi-modernizer
+      sonar-project-key: delphi-modernizer_engine
+      sonar-exclusions: kit/**
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
@@ -66,4 +69,6 @@ jobs:
       - name: Lint the scripts
         run: shellcheck eng/*.sh
       - name: Lint the Markdown
-        run: npx --yes markdownlint-cli2@0.24.0
+        run: |
+          npm install --global --ignore-scripts markdownlint-cli2@0.24.0
+          markdownlint-cli2

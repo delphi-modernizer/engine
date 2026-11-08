@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DelphiModernizer.Engine.Core;
 
@@ -6,14 +7,13 @@ namespace DelphiModernizer.Engine.Core;
 /// <typeparam name="TValue">The type produced when the operation succeeds.</typeparam>
 public sealed class Result<TValue> : Result
 {
-    private readonly TValue? _value;
-
     internal Result(TValue? value, bool isSuccess, Error error)
         : base(isSuccess, error)
     {
-        _value = value;
+        Value = value;
     }
 
+    [AllowNull]
     public TValue Value
     {
         get {
@@ -22,7 +22,7 @@ public sealed class Result<TValue> : Result
                 throw new InvalidOperationException("The value of a failed result cannot be accessed.");
             }
 
-            return _value!;
+            return field!;
         }
     }
 

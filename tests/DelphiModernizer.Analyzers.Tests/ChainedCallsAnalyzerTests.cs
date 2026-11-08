@@ -32,7 +32,7 @@ public sealed class ChainedCallsAnalyzerTests
     [Fact]
     public async Task TwoCallsOnOneLine_AreReported()
     {
-        var lines = await Harness.LinesAsync(
+        int[] lines = await Harness.LinesAsync(
             CreateAnalyzer(), Wrap("        var r = items.Where(x => x != null).ToList();"));
 
         Assert.Equal([11], lines);
@@ -60,7 +60,7 @@ public sealed class ChainedCallsAnalyzerTests
                         .ToList();
             """;
 
-        var lines = await Harness.LinesAsync(CreateAnalyzer(), Wrap(body));
+        int[] lines = await Harness.LinesAsync(CreateAnalyzer(), Wrap(body));
 
         Assert.Equal([12], lines);
     }
@@ -108,7 +108,7 @@ public sealed class ChainedCallsAnalyzerTests
                     var r = items.Where(x => x != null).ToList().Returns();
             """;
 
-        var lines = await Harness.LinesAsync(CreateAnalyzer(), Wrap(body));
+        int[] lines = await Harness.LinesAsync(CreateAnalyzer(), Wrap(body));
 
         Assert.Equal([11], lines);
     }

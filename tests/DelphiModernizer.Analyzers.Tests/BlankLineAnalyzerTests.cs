@@ -26,7 +26,7 @@ public sealed class BlankLineAnalyzerTests
             }
             """;
 
-        var lines = await Harness.LinesAsync(CreateAnalyzer(), source);
+        int[] lines = await Harness.LinesAsync(CreateAnalyzer(), source);
 
         Assert.Equal([8], lines);
     }
@@ -84,7 +84,7 @@ public sealed class BlankLineAnalyzerTests
             }
             """;
 
-        var lines = await Harness.LinesAsync(CreateAnalyzer(), source);
+        int[] lines = await Harness.LinesAsync(CreateAnalyzer(), source);
 
         Assert.Equal([9], lines);
     }
@@ -111,7 +111,7 @@ public sealed class BlankLineAnalyzerTests
             }
             """;
 
-        var lines = await Harness.LinesAsync(CreateAnalyzer(), source);
+        int[] lines = await Harness.LinesAsync(CreateAnalyzer(), source);
 
         Assert.Equal([13], lines);
     }
@@ -152,7 +152,7 @@ public sealed class BlankLineAnalyzerTests
             }
             """;
 
-        var lines = await Harness.LinesAsync(CreateAnalyzer(), source);
+        int[] lines = await Harness.LinesAsync(CreateAnalyzer(), source);
 
         Assert.Equal([8], lines);
     }
@@ -204,7 +204,7 @@ public sealed class BlankLineAnalyzerTests
             }
             """;
 
-        var lines = await Harness.LinesAsync(CreateAnalyzer(), source);
+        int[] lines = await Harness.LinesAsync(CreateAnalyzer(), source);
 
         Assert.Equal([11], lines);
     }
@@ -233,7 +233,7 @@ public sealed class BlankLineAnalyzerTests
             }
             """;
 
-        var lines = await Harness.LinesAsync(CreateAnalyzer(), source);
+        int[] lines = await Harness.LinesAsync(CreateAnalyzer(), source);
 
         Assert.Equal([12], lines);
     }
@@ -272,7 +272,7 @@ public sealed class BlankLineAnalyzerTests
             }
             """;
 
-        var lines = await Harness.LinesAsync(CreateAnalyzer(), source);
+        int[] lines = await Harness.LinesAsync(CreateAnalyzer(), source);
 
         Assert.Equal([2, 2], lines);
     }
@@ -320,7 +320,7 @@ public sealed class BlankLineAnalyzerTests
             }
             """;
 
-        var lines = await Harness.LinesAsync(CreateAnalyzer(), source);
+        int[] lines = await Harness.LinesAsync(CreateAnalyzer(), source);
 
         Assert.Equal([3], lines);
     }

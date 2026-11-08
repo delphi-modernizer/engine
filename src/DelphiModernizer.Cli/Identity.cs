@@ -13,7 +13,7 @@ internal static class Identity
         {
             var name = await CommandRunner.RunAsync("git", ["config", "user.name"], context.CurrentDirectory, cancellationToken);
             var email = await CommandRunner.RunAsync("git", ["config", "user.email"], context.CurrentDirectory, cancellationToken);
-            var trimmedName = name.StandardOutput.Trim();
+            string trimmedName = name.StandardOutput.Trim();
 
             if (!name.Succeeded || trimmedName.Length == 0)
             {

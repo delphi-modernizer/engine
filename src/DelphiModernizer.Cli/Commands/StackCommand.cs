@@ -28,14 +28,14 @@ internal static class StackCommand
                 return CommonOptions.Fail(context, opened.Error);
             }
 
-            var person = parseResult.GetValue(by) ?? await Identity.OfCurrentUserAsync(context, cancellationToken);
+            string? person = parseResult.GetValue(by) ?? await Identity.OfCurrentUserAsync(context, cancellationToken);
 
             if (person is null)
             {
                 return CommonOptions.Fail(context, new Error("Stack.NoIdentity", "Say who decides: set git user.name or pass --by."));
             }
 
-            var choice = parseResult.GetRequiredValue(stack);
+            string choice = parseResult.GetRequiredValue(stack);
             var result = TargetStacks.Decide(opened.Value, choice, person);
 
             if (result.IsFailure)

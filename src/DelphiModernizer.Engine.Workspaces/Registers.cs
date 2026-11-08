@@ -16,8 +16,8 @@ internal static partial class Registers
     /// <summary>The next free ID with <paramref name="prefix"/> in the register at <paramref name="relativePath"/>.</summary>
     public static string NextId(string root, string relativePath, string prefix)
     {
-        var text = File.ReadAllText(Path.Combine(root, relativePath));
-        var highest = RowIds()
+        string text = File.ReadAllText(Path.Combine(root, relativePath));
+        int highest = RowIds()
             .Matches(text)
             .Where(m => m.Groups["prefix"].Value == prefix)
             .Select(m => int.Parse(m.Groups["number"].Value, System.Globalization.CultureInfo.InvariantCulture))
@@ -30,10 +30,12 @@ internal static partial class Registers
     /// <summary>Appends <paramref name="cells"/> as a row under the register's table and marks the register as a draft.</summary>
     public static void AppendRow(string root, string relativePath, params string[] cells)
     {
-        var path = Path.Combine(root, relativePath);
-        var text = File.ReadAllText(path);
-        var row = "| " + string.Join(" | ", cells.Select(c => c.Replace("|", "\\|", StringComparison.Ordinal))) + " |";
-        var updated = text.TrimEnd('\n') + "\n" + row + "\n";
+        string path = Path.Combine(root, relativePath);
+        string text = File.ReadAllText(path);
+        string row = "| "
+            + string.Join(" | ", cells.Select(c => c.Replace("|", "\\|", StringComparison.Ordinal)))
+            + " |";
+        string updated = text.TrimEnd('\n') + "\n" + row + "\n";
 
         if (FrontMatter.Read(updated)?.GetValueOrDefault("status") == "template")
         {

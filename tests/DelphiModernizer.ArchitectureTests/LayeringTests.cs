@@ -21,17 +21,14 @@ public sealed class LayeringTests
         "DelphiModernizer.Engine.Traceability")]
     public void A_project_references_only_the_projects_below_it(string project, params string[] allowed)
     {
-        var references = Assembly
+        string[] references = [.. Assembly
             .Load(project)
             .GetReferencedAssemblies()
             .Select(a => a.Name!)
             .Where(name => name.StartsWith("DelphiModernizer", System.StringComparison.Ordinal) || name == "dmz")
-            .Order()
-            .ToArray();
+            .Order()];
 
-        var expected = allowed
-            .Order()
-            .ToArray();
+        string[] expected = [.. allowed.Order()];
 
         Assert.Equal(expected, references);
     }

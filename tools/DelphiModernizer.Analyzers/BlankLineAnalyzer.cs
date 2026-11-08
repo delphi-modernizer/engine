@@ -15,11 +15,12 @@ public sealed class BlankLineAnalyzer : DiagnosticAnalyzer
 {
     /// <inheritdoc/>
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
-        ImmutableArray.Create(
+        [
             StyleRules.BlankLineBeforeReturn,
             StyleRules.BlankLineBeforeIf,
             StyleRules.BlankLineBeforeNamespace,
-            StyleRules.BlankLineAfterNamespace);
+            StyleRules.BlankLineAfterNamespace,
+        ];
 
     /// <inheritdoc/>
     public override void Initialize(AnalysisContext context)
@@ -52,7 +53,7 @@ public sealed class BlankLineAnalyzer : DiagnosticAnalyzer
             return null;
         }
 
-        var index = siblings.IndexOf(statement);
+        int index = siblings.IndexOf(statement);
 
         return index > 0 ? siblings[index - 1] : null;
     }
@@ -136,7 +137,7 @@ public sealed class BlankLineAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        var semicolonLine = declaration.SemicolonToken.GetLocation().GetLineSpan()
+        int semicolonLine = declaration.SemicolonToken.GetLocation().GetLineSpan()
             .EndLinePosition.Line;
 
         if (Layout.AttachedStartLine(first) - semicolonLine >= 2)

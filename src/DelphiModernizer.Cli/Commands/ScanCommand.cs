@@ -26,7 +26,7 @@ internal static class ScanCommand
 
             var options = new ScanOptions(parseResult.GetValue(codePage) ?? opened.Value.Manifest.Legacy.CodePage);
             var inventory = LegacyScanner.Scan(opened.Value.LegacyRoot, options, cancellationToken);
-            var folder = opened.Value.LatestScanFolder;
+            string folder = opened.Value.LatestScanFolder;
             Directory.CreateDirectory(folder);
             await File.WriteAllBytesAsync(Path.Combine(folder, "inventory.json"), JsonSerializer.SerializeToUtf8Bytes(inventory, InventoryJsonContext.Default.LegacyInventory), cancellationToken);
             await File.WriteAllTextAsync(Path.Combine(folder, "inventory.md"), InventoryMarkdown.Render(inventory), cancellationToken);

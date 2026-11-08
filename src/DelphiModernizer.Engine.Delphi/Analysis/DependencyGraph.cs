@@ -32,7 +32,7 @@ internal sealed class DependencyGraph
     {
         var targets = _edges[from];
 
-        foreach (var used in uses.Where(u => _edges.ContainsKey(u)))
+        foreach (string used in uses.Where(u => _edges.ContainsKey(u)))
         {
             targets.Add(used);
         }
@@ -47,7 +47,7 @@ internal sealed class DependencyGraph
     {
         var fanIn = _edges.Keys.ToDictionary(k => k, _ => 0, StringComparer.OrdinalIgnoreCase);
 
-        foreach (var target in _edges.Values.SelectMany(targets => targets))
+        foreach (string target in _edges.Values.SelectMany(targets => targets))
         {
             fanIn[target]++;
         }
@@ -63,9 +63,9 @@ internal sealed class DependencyGraph
         var lowLink = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
         var onStack = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var stack = new Stack<string>();
-        var nextIndex = 0;
+        int nextIndex = 0;
 
-        foreach (var root in _edges.Keys.Order(StringComparer.OrdinalIgnoreCase))
+        foreach (string root in _edges.Keys.Order(StringComparer.OrdinalIgnoreCase))
         {
             if (index.ContainsKey(root))
             {
@@ -73,7 +73,7 @@ internal sealed class DependencyGraph
             }
 
             var work = new Stack<(string Node, IEnumerator<string> Targets)>();
-            Enter(root);
+            work.Push(Enter(root));
 
             while (work.Count > 0)
             {
@@ -81,15 +81,15 @@ internal sealed class DependencyGraph
 
                 if (targets.MoveNext())
                 {
-                    var target = targets.Current;
+                    string target = targets.Current;
 
-                    if (!index.ContainsKey(target))
+                    if (!index.TryGetValue(target, out int targetIndex))
                     {
-                        Enter(target);
+                        work.Push(Enter(target));
                     }
                     else if (onStack.Contains(target))
                     {
-                        lowLink[node] = Math.Min(lowLink[node], index[target]);
+                        lowLink[node] = Math.Min(lowLink[node], targetIndex);
                     }
 
                     continue;
@@ -100,7 +100,7 @@ internal sealed class DependencyGraph
 
                 if (work.Count > 0)
                 {
-                    var parent = work.Peek().Node;
+                    string parent = work.Peek().Node;
                     lowLink[parent] = Math.Min(lowLink[parent], lowLink[node]);
                 }
 
@@ -115,7 +115,7 @@ internal sealed class DependencyGraph
                 }
             }
 
-            void Enter(string node)
+            (string Node, IEnumerator<string> Targets) Enter(string node)
             {
                 index[node] = nextIndex;
                 lowLink[node] = nextIndex;
@@ -125,7 +125,8 @@ internal sealed class DependencyGraph
                 var targets = _edges[node]
                     .Order(StringComparer.OrdinalIgnoreCase)
                     .GetEnumerator();
-                work.Push((node, targets));
+
+                return (node, targets);
             }
         }
 

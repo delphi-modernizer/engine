@@ -5,22 +5,15 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace DelphiModernizer.Analyzers;
 
 /// <summary>One call in a chain: the dot that introduces it and the name it invokes.</summary>
-public readonly struct ChainLink
+/// <param name="dot">The <c>.</c> that introduces the call.</param>
+/// <param name="onOwnLine">Whether the dot is the first thing on its line.</param>
+public readonly struct ChainLink(SyntaxToken dot, bool onOwnLine)
 {
-    /// <summary>Creates a link.</summary>
-    /// <param name="dot">The <c>.</c> that introduces the call.</param>
-    /// <param name="onOwnLine">Whether the dot is the first thing on its line.</param>
-    public ChainLink(SyntaxToken dot, bool onOwnLine)
-    {
-        Dot = dot;
-        OnOwnLine = onOwnLine;
-    }
-
     /// <summary>The <c>.</c> that introduces the call.</summary>
-    public SyntaxToken Dot { get; }
+    public SyntaxToken Dot { get; } = dot;
 
     /// <summary>Whether the dot already starts its own line.</summary>
-    public bool OnOwnLine { get; }
+    public bool OnOwnLine { get; } = onOwnLine;
 }
 
 /// <summary>
@@ -78,8 +71,8 @@ public static class CallChain
 
             if (!_passengers.Contains(access.Name.Identifier.ValueText))
             {
-                var dotLine = dot.GetLocation().GetLineSpan().StartLinePosition.Line;
-                var beforeLine = dot.GetPreviousToken().GetLocation().GetLineSpan()
+                int dotLine = dot.GetLocation().GetLineSpan().StartLinePosition.Line;
+                int beforeLine = dot.GetPreviousToken().GetLocation().GetLineSpan()
                     .EndLinePosition.Line;
 
                 links.Add(new ChainLink(dot, beforeLine != dotLine));

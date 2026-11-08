@@ -51,11 +51,11 @@ internal static class Harness
 
     private static ImmutableArray<MetadataReference> Load()
     {
-        var trusted = (string?)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES") ?? string.Empty;
-        var paths = trusted.Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries);
+        string trusted = (string?)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES") ?? string.Empty;
+        string[] paths = trusted.Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries);
         var references = new List<MetadataReference>(paths.Length);
 
-        foreach (var path in paths)
+        foreach (string path in paths)
         {
             references.Add(MetadataReference.CreateFromFile(path));
         }

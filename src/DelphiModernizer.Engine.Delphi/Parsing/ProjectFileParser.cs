@@ -21,7 +21,7 @@ internal static class ProjectFileParser
 
     public static ProjectInfo Parse(string path, string text)
     {
-        var extension = Path
+        string extension = Path
             .GetExtension(path)
             .ToLowerInvariant();
 
@@ -56,7 +56,7 @@ internal static class ProjectFileParser
     /// <remarks>Coarse by design: several releases share a major value. docs/SCANNER.md lists the bands; confirm with the team.</remarks>
     public static string? DelphiVersionOf(string? projectVersion)
     {
-        if (!decimal.TryParse(projectVersion, NumberStyles.Number, CultureInfo.InvariantCulture, out var version))
+        if (!decimal.TryParse(projectVersion, NumberStyles.Number, CultureInfo.InvariantCulture, out decimal version))
         {
             return null;
         }
@@ -74,9 +74,9 @@ internal static class ProjectFileParser
     private static ProjectInfo ParseDproj(string path, string text)
     {
         var document = Load(text);
-        var projectVersion = Values(document, "ProjectVersion").FirstOrDefault();
-        var framework = Values(document, "FrameworkType").FirstOrDefault();
-        var mainSource = Values(document, "MainSource").FirstOrDefault();
+        string? projectVersion = Values(document, "ProjectVersion").FirstOrDefault();
+        string? framework = Values(document, "FrameworkType").FirstOrDefault();
+        string? mainSource = Values(document, "MainSource").FirstOrDefault();
         var defines = Values(document, "DCC_Define")
             .SelectMany(d => d.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
             .Where(d => !d.StartsWith("$(", StringComparison.Ordinal))
@@ -122,7 +122,7 @@ internal static class ProjectFileParser
 
     private static ProjectInfo ParseBdsproj(string path, string text)
     {
-        var mainSource = Elements(Load(text), "Source")
+        string? mainSource = Elements(Load(text), "Source")
             .Where(e => string.Equals((string?)e.Attribute("Name"), "MainSource", StringComparison.OrdinalIgnoreCase))
             .Select(e => e.Value.Trim())
             .FirstOrDefault();
@@ -135,11 +135,11 @@ internal static class ProjectFileParser
     {
         string? version = null;
         var defines = new List<string>();
-        var section = string.Empty;
+        string section = string.Empty;
 
-        foreach (var raw in text.Split('\n'))
+        foreach (string raw in text.Split('\n'))
         {
-            var line = raw.Trim();
+            string line = raw.Trim();
 
             if (line.StartsWith('[') && line.EndsWith(']'))
             {
@@ -148,7 +148,7 @@ internal static class ProjectFileParser
                 continue;
             }
 
-            var separator = line.IndexOf('=');
+            int separator = line.IndexOf('=');
 
             if (separator < 0)
             {
@@ -157,8 +157,8 @@ internal static class ProjectFileParser
                 continue;
             }
 
-            var key = line[..separator].Trim();
-            var value = line[(separator + 1)..].Trim();
+            string key = line[..separator].Trim();
+            string value = line[(separator + 1)..].Trim();
 
             if (section.Equals("FileVersion", StringComparison.OrdinalIgnoreCase) && key.Equals("Version", StringComparison.OrdinalIgnoreCase))
             {
@@ -170,8 +170,8 @@ internal static class ProjectFileParser
             }
         }
 
-        var isDof = path.EndsWith(".dof", StringComparison.OrdinalIgnoreCase);
-        var delphiVersion = (version, isDof) switch {
+        bool isDof = path.EndsWith(".dof", StringComparison.OrdinalIgnoreCase);
+        string? delphiVersion = (version, isDof) switch {
             (not null, _) => $"Delphi {version}",
             (null, true) => "Delphi 7 or earlier",
             _ => null,
@@ -195,7 +195,7 @@ internal static class ProjectFileParser
     {
         if (line.StartsWith("-D", StringComparison.OrdinalIgnoreCase))
         {
-            var values = line[2..]
+            string[] values = line[2..]
                 .Trim('"')
                 .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             defines.AddRange(values);

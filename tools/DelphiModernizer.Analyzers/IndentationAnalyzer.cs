@@ -23,7 +23,7 @@ public sealed class IndentationAnalyzer : DiagnosticAnalyzer
 
     /// <inheritdoc/>
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
-        ImmutableArray.Create(StyleRules.IndentationOffGrid);
+        [StyleRules.IndentationOffGrid];
 
     /// <inheritdoc/>
     public override void Initialize(AnalysisContext context)
@@ -46,7 +46,7 @@ public sealed class IndentationAnalyzer : DiagnosticAnalyzer
                 continue;
             }
 
-            var indent = 0;
+            int indent = 0;
 
             while (indent < span.Length && text[span.Start + indent] == ' ')
             {

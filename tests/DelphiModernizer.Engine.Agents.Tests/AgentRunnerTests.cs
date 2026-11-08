@@ -9,7 +9,7 @@ using Xunit;
 
 namespace DelphiModernizer.Engine.Agents.Tests;
 
-public sealed class AgentRunnerTests : IDisposable
+public sealed class AgentRunnerTests : IAsyncDisposable
 {
     private readonly string _root = Directory.CreateTempSubdirectory("dmz-run-").FullName;
 
@@ -23,7 +23,7 @@ public sealed class AgentRunnerTests : IDisposable
             """{"type":"result","subtype":"success","is_error":false,"total_cost_usd":0.01,"num_turns":1}""");
 
         var events = await CollectAsync(runner.RunAsync(Request(), CancellationToken.None));
-        var arguments = await File.ReadAllLinesAsync(argumentsFile, TestContext.Current.CancellationToken);
+        string[] arguments = await File.ReadAllLinesAsync(argumentsFile, TestContext.Current.CancellationToken);
 
         var fromStandardOutput = events
             .Where(e => e is not Diagnostic)
@@ -66,7 +66,9 @@ public sealed class AgentRunnerTests : IDisposable
         });
 
         Assert.Equal("cancelled", Summary().Outcome);
-        await using var released = await OpenExclusivelyAsync(Path.Combine(_root, "script.ndjson"));
+        string script = Path.Combine(_root, "script.ndjson");
+        await using var released = await OutwaitHoldersAsync(
+            () => File.Open(script, FileMode.Open, FileAccess.ReadWrite, FileShare.None));
     }
 
     [Fact]
@@ -124,17 +126,21 @@ public sealed class AgentRunnerTests : IDisposable
         Assert.Throws<ArgumentException>(() => RunStore.ReadTranscriptAsync(_root, runId, CancellationToken.None));
     }
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
-        Directory.Delete(_root, recursive: true);
+        await OutwaitHoldersAsync(() => {
+            Directory.Delete(_root, recursive: true);
+
+            return _root;
+        });
     }
 
     private (AgentRunner Runner, string ArgumentsFile) Runner(params string[] script)
     {
-        var scriptFile = Path.Combine(_root, "script.ndjson");
-        var argumentsFile = Path.Combine(_root, "arguments.txt");
+        string scriptFile = Path.Combine(_root, "script.ndjson");
+        string argumentsFile = Path.Combine(_root, "arguments.txt");
         File.WriteAllLines(scriptFile, script);
-        var fake = Path.Combine(AppContext.BaseDirectory, "DelphiModernizer.Engine.Agents.FakeClaude.dll");
+        string fake = Path.Combine(AppContext.BaseDirectory, "DelphiModernizer.Engine.Agents.FakeClaude.dll");
 
         return (new AgentRunner(new ClaudeExecutable("dotnet", [fake, scriptFile, argumentsFile])), argumentsFile);
     }
@@ -146,17 +152,18 @@ public sealed class AgentRunnerTests : IDisposable
 
     private RunSummary Summary()
     {
-        var path = Path.Combine(_root, ".modernizer", "runs", "run-1.json");
+        string path = Path.Combine(_root, ".modernizer", "runs", "run-1.json");
 
         return JsonSerializer.Deserialize(File.ReadAllBytes(path), AgentJsonContext.Default.RunSummary)!;
     }
 
-    /// <summary>Opens a file no one else holds, allowing two seconds for a holder outside the run to let go.</summary>
+    /// <summary>Runs a file operation, allowing two seconds for a holder outside the run to let go.</summary>
     /// <remarks>
-    /// A Windows runner's antivirus can hold a file for a moment after the process that read it exits. The fake CLI
-    /// sleeps 30 s, so a runner that returned without waiting for it still fails here.
+    /// On a Windows runner something outside the test, such as an antivirus scan, can hold a file for a moment after
+    /// the CLI that read it exits. The fake CLI sleeps 30 s, so a runner that returned without waiting for it still
+    /// fails.
     /// </remarks>
-    private static async Task<FileStream> OpenExclusivelyAsync(string path)
+    private static async Task<T> OutwaitHoldersAsync<T>(Func<T> operation)
     {
         var deadline = DateTimeOffset.UtcNow.AddSeconds(2);
 
@@ -164,11 +171,11 @@ public sealed class AgentRunnerTests : IDisposable
         {
             try
             {
-                return File.Open(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+                return operation();
             }
             catch (IOException) when (DateTimeOffset.UtcNow < deadline)
             {
-                await Task.Delay(50, TestContext.Current.CancellationToken);
+                await Task.Delay(50, CancellationToken.None);
             }
         }
     }

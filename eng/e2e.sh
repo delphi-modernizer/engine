@@ -14,7 +14,7 @@ expect() {
   shift
   local actual=0
   "$@" > "$work/out.txt" 2>&1 || actual=$?
-  if [ "$actual" -ne "$expected" ]; then
+  if [[ "$actual" -ne "$expected" ]]; then
     printf 'FAIL: expected exit %s, got %s from: %s\n' "$expected" "$actual" "$*"
     cat "$work/out.txt"
     exit 1

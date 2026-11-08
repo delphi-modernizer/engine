@@ -11,7 +11,7 @@ internal static class Program
     {
         File.WriteAllLines(args[1], args[2..]);
 
-        foreach (var line in File.ReadLines(args[0]))
+        foreach (string line in File.ReadLines(args[0]))
         {
             if (line.StartsWith("#sleep ", StringComparison.Ordinal))
             {

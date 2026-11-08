@@ -58,11 +58,11 @@ internal sealed class FormParser
             return null;
         }
 
-        var line = _current.Line;
+        int line = _current.Line;
         _position++;
         var first = Take();
-        var name = first.Text;
-        var className = first.Text;
+        string name = first.Text;
+        string className = first.Text;
 
         if (_current.Text == ":")
         {
@@ -108,8 +108,8 @@ internal sealed class FormParser
 
     private void ReadProperty(FormComponent component)
     {
-        var name = _current.Text;
-        var line = _current.Line;
+        string name = _current.Text;
+        int line = _current.Line;
         _position += 2;
         var value = ReadValue();
 
@@ -133,22 +133,17 @@ internal sealed class FormParser
     {
         var token = Take();
 
-        switch (token.Kind)
-        {
-            case LexemeKind.String:
-                return new Value(ReadStringContinuation(token.Text), false);
-            case LexemeKind.Word:
-                return new Value(token.Text, true);
-            case LexemeKind.Binary:
-                return new Value(string.Empty, false);
-        }
-
-        return token.Text switch {
-            "(" => new Value(ReadList(), false),
-            "[" => new Value(ReadUntil("]"), false),
-            "<" => SkipCollection(),
-            "-" => new Value("-" + Take().Text, false),
-            _ => new Value(token.Text, false),
+        return token.Kind switch {
+            LexemeKind.String => new Value(ReadStringContinuation(token.Text), false),
+            LexemeKind.Word => new Value(token.Text, true),
+            LexemeKind.Binary => new Value(string.Empty, false),
+            _ => token.Text switch {
+                "(" => new Value(ReadList(), false),
+                "[" => new Value(ReadUntil("]"), false),
+                "<" => SkipCollection(),
+                "-" => new Value("-" + Take().Text, false),
+                _ => new Value(token.Text, false),
+            },
         };
     }
 
@@ -200,7 +195,7 @@ internal sealed class FormParser
 
     private Value SkipCollection()
     {
-        var nesting = 1;
+        int nesting = 1;
 
         while (_position < _lexemes.Count && nesting > 0)
         {
@@ -252,12 +247,12 @@ internal sealed class FormParser
     private static List<Lexeme> Lex(string text)
     {
         var lexemes = new List<Lexeme>();
-        var line = 1;
-        var i = 0;
+        int line = 1;
+        int i = 0;
 
         while (i < text.Length)
         {
-            var c = text[i];
+            char c = text[i];
 
             if (c == '\n')
             {
@@ -285,7 +280,7 @@ internal sealed class FormParser
 
             if (c == '{')
             {
-                var end = text.IndexOf('}', i);
+                int end = text.IndexOf('}', i);
                 end = end < 0 ? text.Length : end + 1;
                 lexemes.Add(new Lexeme(LexemeKind.Binary, string.Empty, line));
                 line += text[i..end].Count(c => c == '\n');
@@ -296,14 +291,14 @@ internal sealed class FormParser
 
             if (char.IsLetterOrDigit(c) || c == '_' || c == '.' || c == '$')
             {
-                var start = i;
+                int start = i;
 
                 while (i < text.Length && (char.IsLetterOrDigit(text[i]) || text[i] is '_' or '.' or '$'))
                 {
                     i++;
                 }
 
-                var word = text[start..i];
+                string word = text[start..i];
                 var kind = char.IsDigit(word[0]) || word[0] is '$' or '.' ? LexemeKind.Number : LexemeKind.Word;
                 lexemes.Add(new Lexeme(kind, word, line));
 
@@ -320,20 +315,20 @@ internal sealed class FormParser
     private static (string Value, int End) LexString(string text, int start)
     {
         var value = new StringBuilder();
-        var i = start;
+        int i = start;
 
         while (i < text.Length && text[i] is '\'' or '#')
         {
             if (text[i] == '#')
             {
-                var digitsStart = ++i;
+                int digitsStart = ++i;
 
                 while (i < text.Length && char.IsDigit(text[i]))
                 {
                     i++;
                 }
 
-                if (int.TryParse(text.AsSpan(digitsStart, i - digitsStart), NumberStyles.Integer, CultureInfo.InvariantCulture, out var code)
+                if (int.TryParse(text.AsSpan(digitsStart, i - digitsStart), NumberStyles.Integer, CultureInfo.InvariantCulture, out int code)
                     && code is >= 0 and <= 0xFFFF)
                 {
                     value.Append((char)code);

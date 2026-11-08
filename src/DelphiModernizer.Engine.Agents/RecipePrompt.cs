@@ -9,7 +9,7 @@ public static class RecipePrompt
 {
     public static Result<string> Render(Recipe recipe, string? argument)
     {
-        var value = argument?.Trim() ?? string.Empty;
+        string value = argument?.Trim() ?? string.Empty;
 
         if (recipe.Argument.Required && value.Length == 0)
         {

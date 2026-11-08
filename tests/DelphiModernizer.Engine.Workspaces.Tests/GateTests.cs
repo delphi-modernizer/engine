@@ -44,7 +44,7 @@ public sealed class GateTests
     {
         using var test = await TestWorkspace.CreateAsync();
         var approval = await ApprovalService.ApproveAsync(test.Workspace, "G0", "Reviewer", "ok", commit: false, CancellationToken.None);
-        var original = test.Read(Charter);
+        string original = test.Read(Charter);
 
         Assert.True(approval.IsSuccess);
         Assert.Equal("approved", State(test, "G0"));

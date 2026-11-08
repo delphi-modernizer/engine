@@ -22,7 +22,7 @@ internal static partial class SecretRedactor
 
     public static string Redact(string text)
     {
-        var assignmentsRedacted = SecretAssignment().Replace(text, m => m.Groups["key"].Value + m.Groups["separator"].Value + Mask);
+        string assignmentsRedacted = SecretAssignment().Replace(text, m => m.Groups["key"].Value + m.Groups["separator"].Value + Mask);
 
         return IdentifiedBy().Replace(assignmentsRedacted, "${lead}" + Mask);
     }
@@ -35,7 +35,7 @@ internal static partial class SecretRedactor
 
     private static bool IsLiteral(string value)
     {
-        var unquoted = value.Trim('"', '\'', ' ');
+        string unquoted = value.Trim('"', '\'', ' ');
 
         return unquoted.Length > 0
             && unquoted[0] is not ('%' or ':' or '?' or '{' or '$' or '@')

@@ -9,7 +9,7 @@ internal static class Fixtures
     {
         for (var directory = new DirectoryInfo(AppContext.BaseDirectory); directory is not null; directory = directory.Parent)
         {
-            var candidate = Path.Combine(directory.FullName, "tests", "fixtures", "delphi", name);
+            string candidate = Path.Combine(directory.FullName, "tests", "fixtures", "delphi", name);
 
             if (Directory.Exists(candidate))
             {

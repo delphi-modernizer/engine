@@ -14,7 +14,7 @@ public static class RunStore
 {
     public static IReadOnlyList<RunSummary> List(string workspaceRoot)
     {
-        var runs = RunsOf(workspaceRoot);
+        string runs = RunsOf(workspaceRoot);
 
         if (!Directory.Exists(runs))
         {
@@ -57,7 +57,7 @@ public static class RunStore
         string summary,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var completed = false;
+        bool completed = false;
 
         if (File.Exists(transcript))
         {
@@ -88,7 +88,7 @@ public static class RunStore
 
         if (!completed && File.Exists(summary))
         {
-            var bytes = await File.ReadAllBytesAsync(summary, cancellationToken);
+            byte[] bytes = await File.ReadAllBytesAsync(summary, cancellationToken);
             var run = JsonSerializer.Deserialize(bytes, AgentJsonContext.Default.RunSummary);
 
             if (run is not null)

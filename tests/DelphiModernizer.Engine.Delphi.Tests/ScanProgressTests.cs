@@ -15,11 +15,11 @@ public sealed class ScanProgressTests
         var progress = new Recorder();
 
         var cancellationToken = TestContext.Current.CancellationToken;
-        var root = Fixtures.Delphi("legacy-erp");
+        string root = Fixtures.Delphi("legacy-erp");
         var inventory = LegacyScanner.Scan(root, new ScanOptions(), progress, cancellationToken);
         var withoutProgress = LegacyScanner.Scan(root, new ScanOptions(), cancellationToken);
         var reports = progress.Reports.ToArray();
-        var total = inventory.Summary.Files;
+        int total = inventory.Summary.Files;
 
         Assert.Equal(new ScanProgress(0, total), reports[0]);
         Assert.Equal(new ScanProgress(total, total), reports[^1]);
@@ -36,7 +36,7 @@ public sealed class ScanProgressTests
         var time = new ManualTime();
         var reporter = new ScanProgressReporter(progress, 1000, time);
 
-        for (var i = 0; i < 1000; i++)
+        for (int i = 0; i < 1000; i++)
         {
             reporter.FileDone();
         }
