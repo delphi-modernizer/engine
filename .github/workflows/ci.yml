@@ -36,6 +36,8 @@ jobs:
       solution: DelphiModernizer.Engine.slnx
       os: '["ubuntu-latest", "windows-latest"]'
       submodules: 'true'
+      sonar-organization: delphi-modernizer
+      sonar-project-key: delphi-modernizer_engine
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
