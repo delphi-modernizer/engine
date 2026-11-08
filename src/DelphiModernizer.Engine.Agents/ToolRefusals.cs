@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace DelphiModernizer.Engine.Agents;
 
-/// <summary>Recognises the tool-result texts Claude Code writes when a PreToolUse hook or a permission rule refuses a call.</summary>
+/// <summary>Recognises the tool results Claude Code writes when a hook or a permission refuses a call.</summary>
 /// <remarks>
 /// The texts are Claude Code's, not a contract; the tests pin each one. A refusal is display data only: recognising one
 /// allows nothing. See docs/design/guard-refusals.md.
@@ -31,12 +31,13 @@ internal static partial class ToolRefusals
 
     private static string Unwrap(string text)
     {
-        return text.StartsWith(_errorOpen, StringComparison.Ordinal) && text.EndsWith(_errorClose, StringComparison.Ordinal)
-            ? text[_errorOpen.Length..^_errorClose.Length].Trim()
-            : text;
+        var wrapped = text.StartsWith(_errorOpen, StringComparison.Ordinal)
+            && text.EndsWith(_errorClose, StringComparison.Ordinal);
+
+        return wrapped ? text[_errorOpen.Length..^_errorClose.Length].Trim() : text;
     }
 
-    /// <summary>The text up to the first sentence end after <paramref name="from"/>, where Claude Code's advice begins.</summary>
+    /// <summary>The text up to the first sentence end after <paramref name="from"/>, where the advice begins.</summary>
     private static string FirstSentence(string text, int from)
     {
         var end = text.IndexOfAny(['\n', '\r'], from);
@@ -46,7 +47,9 @@ internal static partial class ToolRefusals
         return stop < 0 ? line.TrimEnd() : line[..(stop + 1)];
     }
 
-    /// <remarks>Claude Code writes <c>PreToolUse:&lt;tool&gt; hook error: [&lt;hook command&gt;]: &lt;hook stderr&gt;</c>.</remarks>
+    /// <remarks>
+    /// Claude Code writes <c>PreToolUse:&lt;tool&gt; hook error: [&lt;hook command&gt;]: &lt;hook stderr&gt;</c>.
+    /// </remarks>
     [GeneratedRegex(
         @"^PreToolUse:(?<tool>\S+) hook error: \[(?:[^[\]]|\[[^[\]]*\])*\]: (?<reason>[\s\S]+)$",
         RegexOptions.CultureInvariant,
@@ -54,8 +57,8 @@ internal static partial class ToolRefusals
     private static partial Regex HookRefusal();
 
     /// <remarks>
-    /// Claude Code writes <c>Permission to use &lt;tool&gt;[ with …] has been denied…</c> for a deny rule or don't-ask
-    /// mode, and <c>Permission for this … was denied…</c> for a call that needs a prompt.
+    /// Claude Code writes <c>Permission to use &lt;tool&gt;[ with …] has been denied…</c> for a deny rule or
+    /// don't-ask mode, and <c>Permission for this … was denied…</c> for a call that needs a prompt.
     /// </remarks>
     [GeneratedRegex(
         @"^Permission (?:to use (?<tool>[^\s(]+)[^\n]*? has been|for this [^\n]*? was) denied",

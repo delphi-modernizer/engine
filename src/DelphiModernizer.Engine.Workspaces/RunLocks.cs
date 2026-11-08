@@ -41,7 +41,9 @@ public static class RunLocks
     }
 
     /// <summary>The run holding a deliverable's lease, or null when the deliverable is free.</summary>
-    /// <remarks>Only reads: an abandoned lease reads as not alive and stays until the next <see cref="Acquire"/> clears it.</remarks>
+    /// <remarks>
+    /// Only reads: an abandoned lease reads as not alive and stays until the next <see cref="Acquire"/> clears it.
+    /// </remarks>
     public static LeaseHolder? HolderOf(Workspace workspace, string deliverable)
     {
         var holder = Holder(PathOf(workspace, deliverable));

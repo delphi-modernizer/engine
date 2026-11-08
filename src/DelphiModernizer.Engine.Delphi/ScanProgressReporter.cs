@@ -20,7 +20,7 @@ internal sealed class ScanProgressReporter
     private int _reported;
     private long _reportedAt;
 
-    /// <summary>Reports none of <paramref name="total"/> done, so the caller can draw the bar before the first file.</summary>
+    /// <summary>Reports none of <paramref name="total"/> done, so the bar is drawn before the first file.</summary>
     public ScanProgressReporter(IProgress<ScanProgress> progress, int total, TimeProvider time)
     {
         _progress = progress;

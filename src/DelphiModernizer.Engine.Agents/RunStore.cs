@@ -28,7 +28,9 @@ public static class RunStore
             .OrderByDescending(r => r.StartedAt)];
     }
 
-    /// <exception cref="ArgumentException">The run id is not a plain file name, so it could leave the runs folder.</exception>
+    /// <exception cref="ArgumentException">
+    /// The run id is not a plain file name, so it could leave the runs folder.
+    /// </exception>
     public static string TranscriptOf(string workspaceRoot, string runId)
     {
         return PathOf(workspaceRoot, runId, ".jsonl");
@@ -39,8 +41,13 @@ public static class RunStore
     /// Standard error is not recorded, so its diagnostics do not come back. A transcript without a result ends with the
     /// run summary's outcome, as the live run ended; a run still going yields the lines written so far.
     /// </remarks>
-    /// <exception cref="ArgumentException">The run id is not a plain file name, so it could leave the runs folder.</exception>
-    public static IAsyncEnumerable<AgentEvent> ReadTranscriptAsync(string workspaceRoot, string runId, CancellationToken cancellationToken)
+    /// <exception cref="ArgumentException">
+    /// The run id is not a plain file name, so it could leave the runs folder.
+    /// </exception>
+    public static IAsyncEnumerable<AgentEvent> ReadTranscriptAsync(
+        string workspaceRoot,
+        string runId,
+        CancellationToken cancellationToken)
     {
         return ReadAsync(TranscriptOf(workspaceRoot, runId), PathOf(workspaceRoot, runId, ".json"), cancellationToken);
     }
@@ -55,7 +62,11 @@ public static class RunStore
         if (File.Exists(transcript))
         {
             // The live runner holds the file open for writing while the run goes on.
-            await using var stream = new FileStream(transcript, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
+            await using var stream = new FileStream(
+                transcript,
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.ReadWrite | FileShare.Delete);
             using var reader = new StreamReader(stream, Encoding.UTF8);
             var parser = new StreamJsonParser();
 
@@ -77,7 +88,8 @@ public static class RunStore
 
         if (!completed && File.Exists(summary))
         {
-            var run = JsonSerializer.Deserialize(await File.ReadAllBytesAsync(summary, cancellationToken), AgentJsonContext.Default.RunSummary);
+            var bytes = await File.ReadAllBytesAsync(summary, cancellationToken);
+            var run = JsonSerializer.Deserialize(bytes, AgentJsonContext.Default.RunSummary);
 
             if (run is not null)
             {

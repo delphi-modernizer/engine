@@ -3,7 +3,7 @@ using Xunit;
 
 namespace DelphiModernizer.Engine.Agents.Tests;
 
-/// <summary>Pins the texts Claude Code 2.1.319 writes into a tool result when a hook or a permission refuses a call.</summary>
+/// <summary>Pins the texts Claude Code 2.1.319 writes into a tool result when a hook or a permission refuses.</summary>
 public sealed class GuardRefusalTests
 {
     private const string _editCall = """{"type":"assistant","message":{"content":[{"type":"tool_use","id":"t1","name":"Edit","input":{"file_path":"legacy/A.pas","old_string":"a","new_string":"b"}}]}}""";
@@ -14,7 +14,8 @@ public sealed class GuardRefusalTests
     {
         var refused = Refusal(
             _editCall,
-            "PreToolUse:Edit hook error: [dmz guard pre-tool-use || exit 2]: legacy/ is read-only evidence; record findings in docs/ instead.\n");
+            "PreToolUse:Edit hook error: [dmz guard pre-tool-use || exit 2]: "
+            + "legacy/ is read-only evidence; record findings in docs/ instead.\n");
 
         Assert.Equal(("t1", "Edit", "legacy/A.pas"), (refused.ToolCallId, refused.Tool, refused.Target));
         Assert.Equal("legacy/ is read-only evidence; record findings in docs/ instead.", refused.Reason);
@@ -23,7 +24,9 @@ public sealed class GuardRefusalTests
     [Fact]
     public void A_hook_command_with_brackets_keeps_the_reason_whole()
     {
-        var refused = Refusal(_bashCall, "PreToolUse:Bash hook error: [test [ -x dmz ] && dmz guard pre-tool-use]: No stderr output");
+        var refused = Refusal(
+            _bashCall,
+            "PreToolUse:Bash hook error: [test [ -x dmz ] && dmz guard pre-tool-use]: No stderr output");
 
         Assert.Equal(("Bash", "rm -rf legacy/x. y"), (refused.Tool, refused.Target));
         Assert.Equal("No stderr output", refused.Reason);
@@ -31,7 +34,8 @@ public sealed class GuardRefusalTests
 
     [Theory]
     [InlineData(
-        "Permission to use Edit has been denied because Claude Code is running in don't ask mode. IMPORTANT: You *may* attempt to accomplish this action using other tools.",
+        "Permission to use Edit has been denied because Claude Code is running in don't ask mode. "
+            + "IMPORTANT: You *may* attempt to accomplish this action using other tools.",
         "Permission to use Edit has been denied because Claude Code is running in don't ask mode.")]
     [InlineData(
         "Permission to use Edit with legacy/**.pas has been denied.",
@@ -71,7 +75,8 @@ public sealed class GuardRefusalTests
     [Fact]
     public void A_refusal_whose_call_was_not_seen_names_the_tool_from_the_text()
     {
-        var refused = Assert.IsType<GuardRefused>(Parse(Result(true, "PreToolUse:Write hook error: [dmz guard pre-tool-use]: no.")).Single());
+        var events = Parse(Result(true, "PreToolUse:Write hook error: [dmz guard pre-tool-use]: no."));
+        var refused = Assert.IsType<GuardRefused>(Assert.Single(events));
 
         Assert.Equal(("Write", null, "no."), (refused.Tool, refused.Target, refused.Reason));
     }

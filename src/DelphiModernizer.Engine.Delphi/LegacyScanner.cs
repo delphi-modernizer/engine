@@ -39,7 +39,11 @@ public static class LegacyScanner
     /// Told files done of the total: once before the first file, at most every 100 ms, and after the last. It is called
     /// on the scan's worker threads, so a UI marshals it, as <see cref="Progress{T}"/> does.
     /// </param>
-    public static LegacyInventory Scan(string root, ScanOptions options, IProgress<ScanProgress>? progress, CancellationToken cancellationToken)
+    public static LegacyInventory Scan(
+        string root,
+        ScanOptions options,
+        IProgress<ScanProgress>? progress,
+        CancellationToken cancellationToken)
     {
         var paths = LegacyFiles.Enumerate(root);
         var decoder = new SourceDecoder(options.LegacyCodePage);

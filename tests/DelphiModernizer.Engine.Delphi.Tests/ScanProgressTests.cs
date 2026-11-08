@@ -14,7 +14,10 @@ public sealed class ScanProgressTests
     {
         var progress = new Recorder();
 
-        var inventory = LegacyScanner.Scan(Fixtures.Delphi("legacy-erp"), new ScanOptions(), progress, TestContext.Current.CancellationToken);
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var root = Fixtures.Delphi("legacy-erp");
+        var inventory = LegacyScanner.Scan(root, new ScanOptions(), progress, cancellationToken);
+        var withoutProgress = LegacyScanner.Scan(root, new ScanOptions(), cancellationToken);
         var reports = progress.Reports.ToArray();
         var total = inventory.Summary.Files;
 
@@ -22,7 +25,7 @@ public sealed class ScanProgressTests
         Assert.Equal(new ScanProgress(total, total), reports[^1]);
         Assert.All(reports.Zip(reports.Skip(1)), pair => Assert.True(pair.First.FilesDone < pair.Second.FilesDone));
         Assert.Equal(
-            JsonSerializer.Serialize(LegacyScanner.Scan(Fixtures.Delphi("legacy-erp"), new ScanOptions(), TestContext.Current.CancellationToken), InventoryJsonContext.Default.LegacyInventory),
+            JsonSerializer.Serialize(withoutProgress, InventoryJsonContext.Default.LegacyInventory),
             JsonSerializer.Serialize(inventory, InventoryJsonContext.Default.LegacyInventory));
     }
 
