@@ -83,13 +83,13 @@ internal sealed class DependencyGraph
                 {
                     string target = targets.Current;
 
-                    if (!index.ContainsKey(target))
+                    if (!index.TryGetValue(target, out int targetIndex))
                     {
                         Enter(target);
                     }
                     else if (onStack.Contains(target))
                     {
-                        lowLink[node] = Math.Min(lowLink[node], index[target]);
+                        lowLink[node] = Math.Min(lowLink[node], targetIndex);
                     }
 
                     continue;

@@ -128,10 +128,11 @@ internal sealed class StreamJsonParser
             && message.TryGetProperty("content", out var content)
             && content.ValueKind == JsonValueKind.Array)
         {
-            return content.EnumerateArray();
+            foreach (var block in content.EnumerateArray())
+            {
+                yield return block;
+            }
         }
-
-        return [];
     }
 
     private static string ContentText(JsonElement content)
