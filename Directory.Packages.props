@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup Label="Analyzers in every project">
-    <GlobalPackageReference Include="SonarAnalyzer.CSharp" Version="10.35.0.4138" />
+    <GlobalPackageReference Include="SonarAnalyzer.CSharp" Version="10.36.0.15337" />
   </ItemGroup>
 
   <ItemGroup Label="Engine">
